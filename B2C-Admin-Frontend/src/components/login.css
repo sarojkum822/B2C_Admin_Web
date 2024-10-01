@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@700;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #ffffff;
+}
+
+.box {
+    width: 80%;
+    max-width: 500px;
+    background-color: #FCD191;
+    padding: 40px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.svg-icon {
+    width: 50%;
+    margin-bottom: 30px;
+}
+
+.login-text {
+    font-size: 24px;
+    color: #525252;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+form {
+    width: 100%;
+}
+
+.text-email, .text-pass {
+    font-size: 18px;
+    font-weight: 500;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.email-input, .password-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border: 2px solid #7D757A;
+    border-radius: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+}
+
+.email-input:focus, .password-input:focus {
+    border-color: #F28500;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #F28500;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e67e00;
+}
