@@ -1,21 +1,45 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SideBar from './components/Leftsidebar';
+import React, { useState } from 'react';
+import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import Leftsidebar from './components/Leftsidebar';
+import Dashboard from './components/Dashboard';
 import Login from './components/login';
-import './App.css';
 
-function App() {
+const App = () => {
+  const navigate = useNavigate();
+  const location = useLocation(); // Get current location
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleNavigation = (index) => {
+    if (index === 0) {
+      navigate('/dashboard'); // Redirect to Dashboard
+    }
+    setSidebarOpen(false); // Close sidebar after navigation on mobile
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  // Check if the current path is the login page
+  const isLoginPage = location.pathname === '/login';
+
   return (
-    <Router>
-      <Routes>
-        
-        <Route path="/login" element={<Login />} />
+    <div className="flex flex-col lg:flex-row h-screen">
+      {/* Render sidebar only if not on the login page */}
+      {!isLoginPage && (
+        <Leftsidebar onIconClick={handleNavigation} isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+      )}
 
-        
-        <Route path="/" element={<SideBar />} />
-      </Routes>
-    </Router>
+      <div className={`w-full ${!isLoginPage ? 'lg:ml-[100px]' : ''} mt-16 lg:mt-0`}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} /> {/* Redirect from root to Login */}
+          <Route path="/login" element={<Login />} /> {/* Route for the Login component */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Add more routes here if needed */}
+        </Routes>
+      </div>
+    </div>
   );
-}
+};
 
 export default App;
