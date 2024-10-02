@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-
 import Leftsidebar from './components/Leftsidebar';
 import Dashboard from './components/Dashboard';
 import Login from './components/login';
+import CustomerInsights from './components/CustomerInsights';
 
 const App = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const App = () => {
           <Route path="/" element={<Navigate to="/login" />} /> {/* Redirect from root to Login */}
           <Route path="/login" element={<Login />} /> {/* Route for the Login component */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/customer-insights" element={<CustomerInsights />} />
           {/* Add more routes here if needed */}
         </Routes>
       </div>
