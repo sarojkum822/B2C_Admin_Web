@@ -4,8 +4,11 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 const OrdersTable = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'ascending' });
   const [showDropdown, setShowDropdown] = useState({}); // Track dropdown visibility
+  const [editIndex, setEditIndex] = useState(null);  // Track the order being edited
+  const [editData, setEditData] = useState(null);    // Temporary state to store edited data
+  const [successMessage, setSuccessMessage] = useState(""); // Success message
 
-  const orders = [
+  const [orders, setOrders] = useState([
     {
       product: "30 pcs Egg Tray",
       qty: "x2",
@@ -51,7 +54,7 @@ const OrdersTable = () => {
       status: "Pending",
       statusColor: "text-red-500",
     },
-  ];
+  ]);
 
   // Sorting function
   const sortedOrders = [...orders].sort((a, b) => {
@@ -79,9 +82,37 @@ const OrdersTable = () => {
     setShowDropdown({}); // Close all dropdowns
   };
 
+  const handleDelete = (index) => {
+    const newOrders = orders.filter((_, i) => i !== index);
+    setOrders(newOrders);
+    setSuccessMessage("Order has been successfully deleted");
+    setTimeout(() => setSuccessMessage(""), 3000); // Clear the success message after 3 seconds
+  };
+
+  // Function to handle order edit
+  const handleEdit = (index) => {
+    setEditIndex(index);
+    setEditData(orders[index]); // Load selected order data into form for editing
+  };
+
+  // Function to save edited order
+  const handleSaveEdit = () => {
+    const updatedOrders = [...orders];
+    updatedOrders[editIndex] = editData;
+    setOrders(updatedOrders);
+    setEditIndex(null);
+    setSuccessMessage("Order has been successfully updated");
+    setTimeout(() => setSuccessMessage(""), 3000); // Clear the success message after 3 seconds
+  };
+
   return (
-    <div className="bg-white p-6 shadow rounded mb-6">
+    <div className="bg-white p-6 shadow rounded mb-6 overflow-y-auto h-[300px] scrollbar-thin scrollbar-thumb-gray-400">
       <h3 className="text-lg font-semibold mb-4">Latest Orders</h3>
+      {successMessage && (
+        <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
+          {successMessage}
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border">
           <thead>
@@ -186,18 +217,93 @@ const OrdersTable = () => {
             </tr>
           </thead>
           <tbody>
-            {sortedOrders.map((order, index) => (
+            {orders.map((order, index) => (
               <tr key={index} className="hover:bg-gray-100 transition duration-200">
-                <td className="p-4 border-b">{order.product}</td>
-                <td className="p-4 border-b">{order.qty}</td>
-                <td className="p-4 border-b">{order.date}</td>
-                <td className="p-4 border-b">{order.revenue}</td>
-                <td className="p-4 border-b">{order.profit}</td>
-                <td className={`p-4 border-b ${order.statusColor}`}>{order.status}</td>
-                <td className="p-4 border-b flex space-x-2">
-                  <FaEdit className="text-blue-500 cursor-pointer hover:text-blue-700 transition duration-200" />
-                  <FaTrash className="text-red-500 cursor-pointer hover:text-red-700 transition duration-200" />
-                </td>
+                {editIndex === index ? (
+                  <>
+                    <td className="p-4 border-b">
+                      <input
+                        type="text"
+                        value={editData.product}
+                        onChange={(e) => setEditData({ ...editData, product: e.target.value })}
+                        className="border px-2 py-1 rounded w-full"
+                      />
+                    </td>
+                    <td className="p-4 border-b">
+                      <input
+                        type="text"
+                        value={editData.qty}
+                        onChange={(e) => setEditData({ ...editData, qty: e.target.value })}
+                        className="border px-2 py-1 rounded w-full"
+                      />
+                    </td>
+                    <td className="p-4 border-b">
+                      <input
+                        type="text"
+                        value={editData.date}
+                        onChange={(e) => setEditData({ ...editData, date: e.target.value })}
+                        className="border px-2 py-1 rounded w-full"
+                      />
+                    </td>
+                    <td className="p-4 border-b">
+                      <input
+                        type="text"
+                        value={editData.revenue}
+                        onChange={(e) => setEditData({ ...editData, revenue: e.target.value })}
+                        className="border px-2 py-1 rounded w-full"
+                      />
+                    </td>
+                    <td className="p-4 border-b">
+                      <input
+                        type="text"
+                        value={editData.profit}
+                        onChange={(e) => setEditData({ ...editData, profit: e.target.value })}
+                        className="border px-2 py-1 rounded w-full"
+                      />
+                    </td>
+                    <td className="p-4 border-b">
+                      <input
+                        type="text"
+                        value={editData.status}
+                        onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+                        className="border px-2 py-1 rounded w-full"
+                      />
+                    </td>
+                    <td className="p-4 border-b">
+                      <button
+                        onClick={handleSaveEdit}
+                        className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditIndex(null)}
+                        className="bg-gray-300 text-black px-3 py-1 rounded"
+                      >
+                        Cancel
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="p-4 border-b">{order.product}</td>
+                    <td className="p-4 border-b">{order.qty}</td>
+                    <td className="p-4 border-b">{order.date}</td>
+                    <td className="p-4 border-b">{order.revenue}</td>
+                    <td className="p-4 border-b">{order.profit}</td>
+                    <td className={`p-4 border-b ${order.statusColor}`}>{order.status}</td>
+                    <td className="p-4 border-b flex space-x-2">
+                      <FaEdit
+                        className="text-blue-500 cursor-pointer hover:text-blue-700 transition duration-200"
+                        onClick={() => handleEdit(index)}
+                      />
+                      <FaTrash
+                        className="text-red-500 cursor-pointer hover:text-red-700 transition duration-200"
+                        onClick={() => handleDelete(index)}
+                      />
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
