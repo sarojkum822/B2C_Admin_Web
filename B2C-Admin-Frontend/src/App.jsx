@@ -11,6 +11,7 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/login";
 import CustomerInsights from "./components/CustomerInsights";
 import DeliveryInsights from "./components/Delivery_Insights";
+import OutletSummary from "./components/OutletDetails_updated";
 
 const App = () => {
   const navigate = useNavigate();
@@ -54,6 +55,8 @@ const App = () => {
           {/* Route for the Login component */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/customer-insights" element={<CustomerInsights />} />
+          <Route path ="/outlet" element={<OutletSummary/>}/>
+          {/* Specific outlet route?? */}
           <Route path="/delivery-insights" element={<DeliveryInsights />} />
           {/* Add more routes here if needed */}
         </Routes>
