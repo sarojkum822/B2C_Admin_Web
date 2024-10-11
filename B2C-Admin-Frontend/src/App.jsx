@@ -19,8 +19,21 @@ const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleNavigation = (index) => {
-    if (index === 0) {
-      navigate("/dashboard"); // Redirect to Dashboard
+    switch (index) {
+      case 0:
+        navigate("/dashboard");
+        break;
+      case 1:
+        navigate("/customer-insights");
+        break;
+      case 2:
+        navigate("/outlet");
+        break;
+      case 3:
+        navigate("/delivery-insights");
+        break;
+      // default:
+      //   navigate("/dashboard"); // Fallback to Dashboard
     }
     setSidebarOpen(false); // Close sidebar after navigation on mobile
   };
@@ -44,9 +57,7 @@ const App = () => {
       )}
 
       <div
-        className={`w-full ${
-          !isLoginPage ? "lg:ml-[100px]" : ""
-        } mt-16 lg:mt-0`}
+        className={`w-full ${!isLoginPage ? "lg:ml-[100px]" : ""} mt-16 lg:mt-0`}
       >
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />{" "}
@@ -55,8 +66,7 @@ const App = () => {
           {/* Route for the Login component */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/customer-insights" element={<CustomerInsights />} />
-          <Route path ="/outlet" element={<OutletSummary/>}/>
-          {/* Specific outlet route?? */}
+          <Route path="/outlet" element={<OutletSummary />} />
           <Route path="/delivery-insights" element={<DeliveryInsights />} />
           {/* Add more routes here if needed */}
         </Routes>

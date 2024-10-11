@@ -1,22 +1,23 @@
 import React from "react";
-import { FiMenu, FiX } from "react-icons/fi";
-import { Link, useLocation } from "react-router-dom";
+import { FiMenu, FiX, FiLogOut } from "react-icons/fi"; // Import the logout icon
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Import useNavigate
 import headlogo from "../assets/headlogo.png";
 import s1 from "../assets/s1.png";
 import s2 from "../assets/s2.png";
 import s3 from "../assets/s3.png";
 import s4 from "../assets/s4.png";
-import s5 from "../assets/s5.png";
+
 
 const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
   const location = useLocation();
-  const icons = [s1, s2, s3, s4, s5];
+  const navigate = useNavigate(); // Hook to programmatically navigate
+  const icons = [s1, s2, s3, s4, <FiLogOut />]; // Add the logout icon
   const labels = [
     "Dashboard",
     "Customers Info",
     "Outlets",
     "Delivery Partners",
-    "Notifications",
+    "Logout", 
   ];
 
   // Determine the active index based on the current path
@@ -26,12 +27,11 @@ const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
         return 0; // Dashboard
       case "/customer-insights":
         return 1; // Customer Insights
-      case "/outlets":
+      case "/outlet":
         return 2; // Outlets
-      case "/delivery-partners":
+      case "/delivery-insights":
         return 3; // Delivery Partners
-      case "/notifications":
-        return 4; // Notifications
+        // 
       default:
         return null; // No active index
     }
@@ -41,13 +41,20 @@ const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
 
   const handleIconClick = (index) => {
     setActiveIndex(index);
-    if (onIconClick) {
+    if (index === 4) { // Check if the Logout icon was clicked
+      handleLogout(); // Call logout function
+    } else if (onIconClick) {
       onIconClick(index);
     }
     if (window.innerWidth < 1024) {
-      // Close sidebar on mobile after clicking
-      toggleSidebar();
+      toggleSidebar(); // Close sidebar on mobile after clicking
     }
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    // Redirect to login page
+    navigate("/login");
   };
 
   return (
@@ -87,13 +94,18 @@ const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
             key={index}
             onClick={() => handleIconClick(index)}
           >
-            <img
-              src={icon}
-              className="w-[30px] h-[30px] cursor-pointer transform transition-transform duration-100 hover:scale-110"
-              alt={`Sidebar icon ${index + 1}`}
-            />
-            <span className="mt-1 text-white text-sm">{labels[index]}</span>{" "}
-            {/* Add labels beneath the icons */}
+            {typeof icon === "string" ? ( // Check if icon is a string
+              <img
+                src={icon}
+                className="w-[30px] h-[30px] cursor-pointer transform transition-transform duration-100 hover:scale-110"
+                alt={`Sidebar icon ${index + 1}`}
+              />
+            ) : (
+              <span className={`text-white text-3xl cursor-pointer transition-transform duration-100 hover:scale-110`}>
+                {icon}
+              </span> // Render the logout icon directly with hover effect
+            )}
+            <span className="mt-1 text-white text-sm cursor-pointer">{labels[index]}</span>
           </div>
         ))}
       </div>
