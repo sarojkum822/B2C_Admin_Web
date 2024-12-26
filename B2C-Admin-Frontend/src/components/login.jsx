@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {auth} from '../Firebase/firebase'
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import {  useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
@@ -11,16 +12,27 @@ const Login = () => {
      
     const navigate = useNavigate()
 
+    useEffect(()=>{
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const uid = user.uid;
+            navigate('/dashboard')
+          }
+        });
+    },[auth,onAuthStateChanged])
+
     const handleSignin =async()=>{
         console.log(email+password);
         navigate('/dashboard')
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 navigate('/dashboard')
+                toast.success("Login successfully!.")
             })
             .catch((error) => {
                 const errorCode = error.code;
                 console.log(errorCode);
+                toast.error("incorrect email or password")
             });
     }
     return (

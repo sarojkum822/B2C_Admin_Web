@@ -14,6 +14,8 @@ import DeliveryInsights from "./components/Delivery_Insights";
 import OutletSummary from "./components/OutletDetails_updated";
 import Orders from "./components/Orders";
 import OrderDetails from "./components/OrderDetails";
+import {ToastContainer} from 'react-toastify'
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -60,7 +62,7 @@ const App = () => {
           toggleSidebar={toggleSidebar}
         />
       )}
-
+      <ToastContainer/>
       <div
         className={`w-full ${!isLoginPage ? "lg:ml-[100px]" : ""} mt-16 lg:mt-0`}
       >
@@ -79,6 +81,7 @@ const App = () => {
           {/* Add more routes here if needed */}
         </Routes>
       </div>
+
     </div>
   );
 };
