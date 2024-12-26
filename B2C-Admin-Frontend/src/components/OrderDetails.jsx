@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const OrderDetails = () => {
   const { id } = useParams();
@@ -35,7 +35,10 @@ const OrderDetails = () => {
   
   return (
     <div className="bg-white p-6 shadow rounded mb-6  mx-auto ml-1">
-      <h3 className="text-xl font-semibold mb-4 text-gray-800">Order Details</h3>
+      <div className="flex gap-10 ">
+       <Link to='/orders' className="text-xl font-semibold mb-4 text-gray-800 underline hover:text-orange-500">Go back</Link>
+       <h3 className="text-xl font-semibold mb-4 text-gray-800">Order Details</h3>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Order Information */}
         <OrderSection title="Order Info">

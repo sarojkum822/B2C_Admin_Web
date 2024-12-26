@@ -6,17 +6,22 @@ import s1 from "../assets/s1.png";
 import s2 from "../assets/s2.png";
 import s3 from "../assets/s3.png";
 import s4 from "../assets/s4.png";
+import s5 from '../assets/order.png'
+import { CiViewList } from "react-icons/ci";
+import { signOut } from "firebase/auth";
+import { auth } from "../Firebase/firebase";
 
 
 const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate(); // Hook to programmatically navigate
-  const icons = [s1, s2, s3, s4, <FiLogOut />]; // Add the logout icon
+  const icons = [s1, s2, s3, s4,<CiViewList/>, <FiLogOut />]; // Add the logout icon
   const labels = [
     "Dashboard",
     "Customers Info",
     "Outlets",
     "Delivery Partners",
+    "Orders",
     "Logout", 
   ];
 
@@ -32,6 +37,9 @@ const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
       case "/delivery-insights":
         return 3; // Delivery Partners
         // 
+      case "/Orders":
+        return 4; // Delivery Partners
+        // 
       default:
         return null; // No active index
     }
@@ -41,7 +49,7 @@ const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
 
   const handleIconClick = (index) => {
     setActiveIndex(index);
-    if (index === 4) { // Check if the Logout icon was clicked
+    if (index === 5) { // Check if the Logout icon was clicked
       handleLogout(); // Call logout function
     } else if (onIconClick) {
       onIconClick(index);
@@ -50,10 +58,16 @@ const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
       toggleSidebar(); // Close sidebar on mobile after clicking
     }
   };
-
+  
   // Logout function
   const handleLogout = () => {
     // Redirect to login page
+    signOut(auth).then(() => {
+      // Sign-out successful.
+      console.log("user logout");
+    }).catch((error) => {
+      // An error happened.
+    });
     navigate("/login");
   };
 

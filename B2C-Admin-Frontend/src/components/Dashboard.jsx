@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StatsCard from './StatsCard';
 import OrdersTable from './OrdersTable';
 import BestsellersTable from './BestsellersTable';
 import OrderDashboard from './OrderDashboard';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../Firebase/firebase';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -20,6 +23,19 @@ const Dashboard = () => {
     setStartDate(start);
     setEndDate(end);
   };
+
+  const navigate = useNavigate()
+  
+  useEffect(()=>{
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log(uid);
+      } else {
+        navigate('/login')
+      }
+    });
+  },[auth,onAuthStateChanged])
 
   return (
     <div className="flex-grow bg-[#f8f8f8] p-4 lg:p-6 relative">

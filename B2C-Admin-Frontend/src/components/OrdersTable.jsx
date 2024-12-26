@@ -16,8 +16,6 @@ const OrdersTable = () => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get('https://b2c-49u4.onrender.com/api/v1/order/order');
-        console.log(response.data); // Log the response for debugging
-
         // Extract the "orders" array from the response
         const fetchedOrders = response.data.orders || [];
         setOrders(fetchedOrders);
