@@ -12,6 +12,8 @@ import Login from "./components/login";
 import CustomerInsights from "./components/CustomerInsights";
 import DeliveryInsights from "./components/Delivery_Insights";
 import OutletSummary from "./components/OutletDetails_updated";
+import Orders from "./components/Orders";
+import OrderDetails from "./components/OrderDetails";
 
 const App = () => {
   const navigate = useNavigate();
@@ -31,6 +33,9 @@ const App = () => {
         break;
       case 3:
         navigate("/delivery-insights");
+        break;
+      case 4:
+        navigate("/orders");
         break;
       // default:
       //   navigate("/dashboard"); // Fallback to Dashboard
@@ -68,6 +73,9 @@ const App = () => {
           <Route path="/customer-insights" element={<CustomerInsights />} />
           <Route path="/outlet" element={<OutletSummary />} />
           <Route path="/delivery-insights" element={<DeliveryInsights />} />
+          <Route path="/orders" element={<Orders/>}/>
+          <Route path="/order/:id" element={<OrderDetails/>}/>
+
           {/* Add more routes here if needed */}
         </Routes>
       </div>
