@@ -15,6 +15,7 @@ import OutletSummary from "./components/OutletDetails_updated";
 import Orders from "./components/Orders";
 import OrderDetails from "./components/OrderDetails";
 import {ToastContainer} from 'react-toastify'
+import Products from "./components/Products";
 
 
 const App = () => {
@@ -76,7 +77,7 @@ const App = () => {
           <Route path="/outlet" element={<OutletSummary />} />
           <Route path="/delivery-insights" element={<DeliveryInsights />} />
           <Route path="/orders" element={<Orders/>}/>
-          <Route path="/order/:id" element={<OrderDetails/>}/>
+          <Route path="/Products" element={<Products/>}/>
 
           {/* Add more routes here if needed */}
         </Routes>
