@@ -7,7 +7,7 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null); // Stores the product being edited
-  const [updatedValues, setUpdatedValues] = useState({ rate: "", discount: "" }); // Stores the updated rate and discount
+  const [updatedValues, setUpdatedValues] = useState({ rate: "", discount: "", countInStock: "" }); // Fix the field name here
 
   // Fetch products from the API
   useEffect(() => {
@@ -28,7 +28,7 @@ const ProductsPage = () => {
   // Handle edit button click
   const handleEdit = (product) => {
     setEditingProduct(product); // Set the product being edited
-    setUpdatedValues({ rate: product.rate, discount: product.discount }); // Pre-fill inputs with current values
+    setUpdatedValues({ rate: product.rate, discount: product.discount, countInStock: product.countInStock }); // Include countInStock here
   };
 
   // Handle form input changes
@@ -83,6 +83,9 @@ const ProductsPage = () => {
             <p className="text-gray-700 mb-1">
               <span className="font-bold">Discount:</span> {product.discount}%
             </p>
+            <p className="text-gray-700 mb-1">
+              <span className="font-bold">In Stock:</span> {product.countInStock}
+            </p>
             <button
               onClick={() => handleEdit(product)}
               className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
@@ -97,7 +100,7 @@ const ProductsPage = () => {
       {editingProduct && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-end z-50">
           <div className="bg-white w-1/3 h-full p-6">
-            <h2 className="text-2xl font-bold mb-4">Edit Product </h2>
+            <h2 className="text-2xl font-bold mb-4">Edit Product</h2>
             <div className="mb-4">
               <label htmlFor="rate" className="block font-medium mb-2">
                 Rate:
@@ -124,6 +127,20 @@ const ProductsPage = () => {
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
                 placeholder="Enter new discount"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="countInStock" className="block font-medium mb-2">
+                In Stock:
+              </label>
+              <input
+                type="number"
+                name="countInStock"
+                id="countInStock"
+                value={updatedValues.countInStock}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded"
+                placeholder="Enter the count in stock"
               />
             </div>
             <div className="flex justify-end">

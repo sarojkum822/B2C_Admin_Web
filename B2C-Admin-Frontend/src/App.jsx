@@ -77,6 +77,7 @@ const App = () => {
           <Route path="/outlet" element={<OutletSummary />} />
           <Route path="/delivery-insights" element={<DeliveryInsights />} />
           <Route path="/orders" element={<Orders/>}/>
+          <Route path="/order/:id" element={<OrderDetails/>}/>
           <Route path="/Products" element={<Products/>}/>
 
           {/* Add more routes here if needed */}
