@@ -12,6 +12,11 @@ import Login from "./components/login";
 import CustomerInsights from "./components/CustomerInsights";
 import DeliveryInsights from "./components/Delivery_Insights";
 import OutletSummary from "./components/OutletDetails_updated";
+import Orders from "./components/Orders";
+import OrderDetails from "./components/OrderDetails";
+import {ToastContainer} from 'react-toastify'
+import Products from "./components/Products";
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -31,6 +36,9 @@ const App = () => {
         break;
       case 3:
         navigate("/delivery-insights");
+        break;
+      case 4:
+        navigate("/orders");
         break;
       // default:
       //   navigate("/dashboard"); // Fallback to Dashboard
@@ -55,7 +63,7 @@ const App = () => {
           toggleSidebar={toggleSidebar}
         />
       )}
-
+      <ToastContainer/>
       <div
         className={`w-full ${!isLoginPage ? "lg:ml-[100px]" : ""} mt-16 lg:mt-0`}
       >
@@ -68,9 +76,14 @@ const App = () => {
           <Route path="/customer-insights" element={<CustomerInsights />} />
           <Route path="/outlet" element={<OutletSummary />} />
           <Route path="/delivery-insights" element={<DeliveryInsights />} />
+          <Route path="/orders" element={<Orders/>}/>
+          <Route path="/order/:id" element={<OrderDetails/>}/>
+          <Route path="/Products" element={<Products/>}/>
+
           {/* Add more routes here if needed */}
         </Routes>
       </div>
+
     </div>
   );
 };
