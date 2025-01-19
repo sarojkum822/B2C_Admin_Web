@@ -11,7 +11,8 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/login";
 import CustomerInsights from "./components/CustomerInsights";
 import DeliveryInsights from "./components/Delivery_Insights";
-import OutletSummary from "./components/OutletDetails_updated";
+// import OutletSummary from "./components/OutletDetails_updated";
+import OutletSummary from "./components/outlet";
 import Orders from "./components/Orders";
 import OrderDetails from "./components/OrderDetails";
 import {ToastContainer} from 'react-toastify'
