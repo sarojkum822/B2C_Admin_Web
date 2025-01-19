@@ -21,7 +21,9 @@ const Login = () => {
         });
     },[auth,onAuthStateChanged])
 
-    const handleSignin =async()=>{
+    const handleSignin =async(e)=>{
+        e.preventDefault();
+        
         console.log(email+password);
         navigate('/dashboard')
         signInWithEmailAndPassword(auth, email, password)
