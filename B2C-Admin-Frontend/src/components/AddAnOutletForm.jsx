@@ -3,6 +3,8 @@ import { toast } from 'react-toastify';
 
 const AddAnOutletForm = ({ handleClose }) => {
 
+  const [outletPartner, setOutletPartner] = useState([]);
+
   const [formData, setFormData] = useState({
     outletNumber: '',
     area: '',
@@ -175,6 +177,36 @@ const AddAnOutletForm = ({ handleClose }) => {
     }
   };
 
+   // Initialize as an array
+
+  const fetchOutletPartner = async () => {
+    try {
+      const response = await fetch(
+        "https://b2c-backend-1.onrender.com/api/v1/admin/getoutletpartners"
+      );
+      if (response.ok) {
+        const data = await response.json(); // Parse JSON data
+        console.log("Fetched Data:", data); // Log the response
+        setOutletPartner(data); // Set the state with the fetched data
+      } else {
+        console.error("Failed to fetch: Status", response.status);
+      }
+    } catch (error) {
+      console.error("Error in fetching Outlet Partner:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchOutletPartner(); // Fetch data on component mount
+  }, []);
+
+
+  useEffect(() => {
+    if (outletPartner) {
+      console.log("Updated Outlet Partner State:", outletPartner);
+    }
+  }, [outletPartner]);
+  
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -245,9 +277,11 @@ const AddAnOutletForm = ({ handleClose }) => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             <option value="">Select an Outlet Partner</option>
-            <option value="partner_a">Partner A </option>
-            <option value="partner_a">Partner B </option>
-            <option value="partner_a">Partner C </option>
+            {outletPartner.map((partner) => (
+          <option key={partner.id} value={partner.name}>
+            {partner.name}
+          </option>
+        ))}
           </select>
         </div>
 
