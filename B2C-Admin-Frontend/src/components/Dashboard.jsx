@@ -38,7 +38,7 @@ const Dashboard = () => {
   },[auth,onAuthStateChanged])
 
   return (
-    <div className="flex-grow bg-[#f8f8f8] p-4 lg:p-6 relative">
+    <div className="flex-grow bg-[#f8f8f8] p-4 lg:p-6 relative m-2">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
         <h1 className="text-2xl font-bold mb-4 lg:mb-0 ml-4">Dashboard</h1>
         {/* <div className="text-sm relative w-full lg:w-auto">
@@ -69,7 +69,9 @@ const Dashboard = () => {
       </div>
 
       <OrderDashboard />
+      
       <OrdersTable />
+
       <BestsellersTable />
     </div>
   );
