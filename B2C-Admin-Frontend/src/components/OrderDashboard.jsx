@@ -52,6 +52,7 @@ const OrderDashboard = () => {
   };
 
   return (
+    <>
     <div className="bg-white p-6 shadow rounded mb-6 relative"> {/* Added relative positioning */}
       <h3 className="text-lg font-semibold mb-4">Order Dashboard</h3>
       <div className="absolute top-4 right-6 flex space-x-2"> {/* Positioned buttons to the top right */}
@@ -63,6 +64,7 @@ const OrderDashboard = () => {
         <Bar data={data} options={options} />
       </div>
     </div>
+    </>
   );
 };
 
