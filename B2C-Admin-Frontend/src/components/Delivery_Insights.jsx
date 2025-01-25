@@ -9,6 +9,7 @@ import plus from "../assets/Images/Plus.png";
 import naruto from "../assets/Images/Naruto.jpg";
 import Leftsidebar from "./Leftsidebar";
 import { toast } from "react-toastify";
+import axios from 'axios'
 
 import { useNavigate } from "react-router-dom";
 // Setting up the custom marker icon
@@ -33,6 +34,8 @@ const DeliveryInsights = () => {
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [deliveryList, setDeliveryList] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState("All");
+  const [phone,setPhone] = useState('');
+  const [firstName,setFirstName] = useState('');
 
   const [loading, setLoading] = useState(false);
 
@@ -42,12 +45,60 @@ const DeliveryInsights = () => {
     setShowAddPartnerForm(true);
   };
 
-  const handleCloseForm = () => {
-    setShowAddPartnerForm(false);
+  const handleAddPartner = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+    try {
+      const response = await axios.post(
+        "https://b2c-backend-1.onrender.com/api/v1/admin/makedeliverypartner",
+        {phone,firstName}
+      );
+
+      // Show success message
+      toast.success("Delivery partner added successfully! ");
+
+      // Close the form
+      setShowAddPartnerForm(false);
+
+      console.log("Success:", response.data.password);
+    } catch (error) {
+      toast.error("An error occurred while adding the delivery partner.");
+      console.error("Error:", error);
+    }
   };
 
+  
  
-
+  const fetchDeliveryPartners = async () => {
+    setLoading(true); // Show a loading state while fetching
+    setError(null); // Reset any previous error
+    try {
+      const response = await fetch(
+        "https://b2c-backend-1.onrender.com/api/v1/admin/deliveryInsights"
+      );
+  
+      if (!response.ok) {
+        // Check if response is not successful
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const partnerDetails = await response.json();
+      console.log("partnerDetails", partnerDetails);
+      console.log("TotalDeliveries", partnerDetails.totalDeliveries);
+      console.log("totalDrivers", partnerDetails.totalDrivers);
+  
+      settotalDrivers(partnerDetails.totalDrivers);
+      setTotalDeliveries(partnerDetails.totalDeliveries);
+      setData(partnerDetails.drivers);
+    } catch (error) {
+      console.error("API error:", error);
+      setError("Failed to fetch delivery partners. Please try again later.");
+    } finally {
+      setLoading(false); // End loading state
+    }
+  };
+  const handleCloseForm = ()=>{
+    setShowAddPartnerForm(false)
+  }
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -56,14 +107,14 @@ const DeliveryInsights = () => {
     }
   };
 
-  useEffect(() => {
-    const data = {
-      totalDeliveries: 1835,
-      deliveryPartners: 96,
-      avgDeliveryTime: "43.5 mins",
-    };
-    setDeliveryOverview(data);
-  }, []);
+  // useEffect(() => {
+  //   const data = {
+  //     totalDeliveries: 1835,
+  //     deliveryPartners: 96,
+  //     avgDeliveryTime: "43.5 mins",
+  //   };
+  //   setDeliveryOverview(data);
+  // }, []);
   //   const fetchDeliveryList = async () => {
   //     const data = [
   //       {
@@ -127,40 +178,29 @@ const DeliveryInsights = () => {
     setSelectedPartner(partner);
   };
 
+  useEffect(()=>{
+  })
+  const handleApprovePartner = async (id) => {
+    try {
+      const response = await axios.patch(
+        `https://b2c-backend-1.onrender.com/api/v1/admin/approveDelivery/${id}`
+      );
+        toast.success("Delivery partner approved successfully!");
+        console.log("Success:", response.data);
+        fetchDeliveryPartners()
+    } catch (error) {
+      toast.error("An error occurred while approving the delivery partner.");
+      console.error("Error:", error);
+    }
+  };
+
   const [data, setData] = useState([]);
   const [TotalDeliveries, setTotalDeliveries] = useState("");
   const [totalDrivers, settotalDrivers] = useState("");
   const [partnerDetails, setpartnerDetails] = useState([]);
   const [error,setError] = useState(true);
 
-  const fetchDeliveryPartners = async () => {
-    setLoading(true); // Show a loading state while fetching
-    setError(null); // Reset any previous error
-    try {
-      const response = await fetch(
-        "https://b2c-backend-1.onrender.com/api/v1/admin/deliveryInsights"
-      );
-  
-      if (!response.ok) {
-        // Check if response is not successful
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      const partnerDetails = await response.json();
-      console.log("partnerDetails", partnerDetails);
-      console.log("TotalDeliveries", partnerDetails.totalDeliveries);
-      console.log("totalDrivers", partnerDetails.totalDrivers);
-  
-      settotalDrivers(partnerDetails.totalDrivers);
-      setTotalDeliveries(partnerDetails.totalDeliveries);
-      setData(partnerDetails.drivers);
-    } catch (error) {
-      console.error("API error:", error);
-      setError("Failed to fetch delivery partners. Please try again later.");
-    } finally {
-      setLoading(false); // End loading state
-    }
-  };
+ 
   
   useEffect(() => {
     fetchDeliveryPartners();
@@ -403,6 +443,8 @@ const DeliveryInsights = () => {
 
                     <div className="flex space-x-2 md:space-x-4">
                       <input
+                        value={firstName}
+                        onChange={(e)=>setFirstName(e.target.value)}
                         type="text"
                         placeholder="First Name"
                         className="border border-gray-300 rounded w-full p-1 md:p-2"
@@ -410,12 +452,14 @@ const DeliveryInsights = () => {
                     </div>
 
                     <input
+                      value={phone}
+                      onChange={(e)=>setPhone(e.target.value)}
                       type="text"
                       placeholder="Phone Number"
                       className="border border-gray-300 rounded w-full p-1 md:p-2"
                     />
 
-                    <button
+                    <button onClick={handleAddPartner}
                       type="submit"
                       className="bg-orange-500 text-white px-4 py-2 rounded w-full hover:bg-orange-600"
                     >
