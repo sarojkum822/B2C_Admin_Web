@@ -180,7 +180,7 @@ const DeliveryInsights = () => {
 
   useEffect(()=>{
   })
-  const handleApprovePartner = async (id) => {
+  const handleApprovePartner = async (id) => {git 
     try {
       const response = await axios.patch(
         `https://b2c-backend-1.onrender.com/api/v1/admin/approveDelivery/${id}`
