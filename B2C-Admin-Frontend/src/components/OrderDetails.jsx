@@ -27,93 +27,126 @@ const OrderDetails = () => {
     fetchOrderDetails();
   }, [id]);
 
-  if (loading) return <p className="text-center text-gray-700">Loading...</p>;
-  if (error) return <p className="text-center text-red-600">{error}</p>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <p className="text-lg text-gray-600 animate-pulse">Loading...</p>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <p className="text-lg text-red-600 bg-red-50 px-4 py-2 rounded-lg">{error}</p>
+    </div>
+  );
 
   const { order: orderInfo, customer, outlet } = order || {};
-  console.log(order);
   
   return (
-    <div className="bg-white p-6 shadow rounded mb-6  mx-auto ml-1">
-      <div className="flex gap-10 ">
-       <Link to='/orders' className="text-xl font-semibold mb-4 text-gray-800 underline hover:text-orange-500">Go back</Link>
-       <h3 className="text-xl font-semibold mb-4 text-gray-800">Order Details</h3>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Order Information */}
-        <OrderSection title="Order Info">
-          <Detail label="Order ID" value={orderInfo?.id} />
-          <Detail
-            label="Status"
-            value={orderInfo?.status}
-            highlight={orderInfo?.status === "Delivered" ? "text-green-600" : "text-red-600"}
-          />
-          <Detail label="Amount" value={`Rs ${orderInfo?.amount}`} />
-          <Detail label="Delivery Distance" value={orderInfo?.deleveryDistance} />
-          <Detail
-            label="Order Date"
-            value={new Date(orderInfo?.createdAt?._seconds * 1000).toLocaleString()}
-          />
-          <Detail
-            label="Last Updated"
-            value={new Date(orderInfo?.updatedAt?._seconds * 1000).toLocaleString()}
-          />
-          <Detail label="Delivery Partner" value={orderInfo?.deliveryPartnerId==null?"delivery partner need to accept":orderInfo?.deliveryPartnerId}/>
-          <Detail label="accepted by delivery partner" value={orderInfo?.orderAcceptedByRider==false? "no":"yes"}/>
-        </OrderSection>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link 
+                to="/orders" 
+                className="text-gray-600 hover:text-orange-500 transition-colors duration-200 flex items-center gap-2"
+              >
+                <span className="text-sm">←</span>
+                <span>Back to Orders</span>
+              </Link>
+              <h3 className="text-xl font-semibold text-gray-800">Order Details</h3>
+            </div>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              orderInfo?.status === "Delivered" 
+                ? "bg-green-100 text-green-700" 
+                : "bg-orange-100 text-orange-700"
+            }`}>
+              {orderInfo?.status}
+            </span>
+          </div>
+        </div>
 
-        {/* Customer Information */}
-        <OrderSection title="Customer Info">
-          {/* <Detail label="Customer ID" value={customer?.id} /> */}
-          <Detail label="Name" value={customer?.name} />
-          <Detail label="Phone" value={customer?.phone} />
-          <Detail label="Email" value={customer?.email} />
-        </OrderSection>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+          <OrderSection title="Order Information">
+            <Detail label="Order ID" value={orderInfo?.id} />
+            <Detail label="Amount" value={`Rs ${orderInfo?.amount}`} className="font-medium text-gray-900" />
+            <Detail label="Delivery Distance" value={orderInfo?.deleveryDistance} />
+            <Detail
+              label="Order Date"
+              value={new Date(orderInfo?.createdAt?._seconds * 1000).toLocaleString()}
+            />
+            <Detail
+              label="Last Updated"
+              value={new Date(orderInfo?.updatedAt?._seconds * 1000).toLocaleString()}
+            />
+            <Detail 
+              label="Delivery Partner" 
+              value={orderInfo?.deliveryPartnerId ?? "Awaiting acceptance"}
+              className={orderInfo?.deliveryPartnerId ? "" : "text-amber-600"}
+            />
+            <Detail 
+              label="Accepted by Partner" 
+              value={orderInfo?.orderAcceptedByRider ? "Yes" : "No"}
+              className={orderInfo?.orderAcceptedByRider ? "text-green-600" : "text-red-600"}
+            />
+          </OrderSection>
 
-        {/* Address Information */}
-        <OrderSection title="Delivery Address">
-          {Object.entries(orderInfo?.address?.fullAddress || {}).map(([key, value]) => (
-            <Detail key={key} label={key} value={value} />
-          ))}
-        </OrderSection>
+          <OrderSection title="Customer Information">
+            <Detail label="Name" value={customer?.name} />
+            <Detail label="Phone" value={customer?.phone} />
+            <Detail label="Email" value={customer?.email} />
+          </OrderSection>
 
-        {/* Products Information */}
-        <OrderSection title="Products">
-          <ul className="list-disc list-inside text-gray-600">
-            {Object.entries(orderInfo?.products || {}).map(([key, value]) => (
-              <li key={key}>
-                <span className="font-semibold text-gray-800">{key}:</span> {value}
-              </li>
-            ))}
-          </ul>
-        </OrderSection>
+          <OrderSection title="Delivery Address">
+            <div className="space-y-2">
+              {Object.entries(orderInfo?.address?.fullAddress || {}).map(([key, value]) => (
+                <Detail key={key} label={key} value={value} />
+              ))}
+            </div>
+          </OrderSection>
 
-        {/* Outlet Information */}
-        <OrderSection title="Outlet Info">
-          {/* <Detail label="Outlet ID" value={outlet?.id} /> */}
-          <Detail label="Name" value={outlet?.name} />
-          <Detail label="Phone" value={outlet?.phNo} />
-          {/* <Detail lable="Outlet address"  value = {order?.address}/> */}
-          {Object.entries(orderInfo?.address?.fullAddress || {}).map(([key, value]) => (
-            <Detail key={key} label={key} value={value} />
-          ))}
-        </OrderSection>
+          <OrderSection title="Products">
+            <ul className="space-y-3">
+              {Object.entries(orderInfo?.products || {}).map(([key, value]) => (
+                <li key={key} className="flex items-center space-x-2 text-gray-700">
+                  <span className="w-2 h-2 bg-gray-300 rounded-full"></span>
+                  <span className="font-medium">{key}:</span>
+                  <span>{value}</span>
+                </li>
+              ))}
+            </ul>
+          </OrderSection>
+
+          <OrderSection title="Outlet Information">
+            <Detail label="Name" value={outlet?.name} />
+            <Detail label="Phone" value={outlet?.phNo} />
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <h5 className="text-sm font-medium text-gray-500 mb-2">Address</h5>
+              {Object.entries(orderInfo?.address?.fullAddress || {}).map(([key, value]) => (
+                <Detail key={key} label={key} value={value} />
+              ))}
+            </div>
+          </OrderSection>
+        </div>
       </div>
     </div>
   );
 };
 
 const OrderSection = ({ title, children }) => (
-  <div>
-    <h4 className="text-lg font-semibold text-gray-700 mb-2">{title}</h4>
-    {children}
+  <div className="bg-gray-50 rounded-lg p-6">
+    <h4 className="text-lg font-semibold text-gray-800 mb-4">{title}</h4>
+    <div className="space-y-3">
+      {children}
+    </div>
   </div>
 );
 
-const Detail = ({ label, value, highlight }) => (
-  <p className={`text-gray-600 ${highlight || ""}`}>
-    <span className="font-semibold text-gray-800">{label}:</span> {value || "N/A"}
-  </p>
+const Detail = ({ label, value, className = "" }) => (
+  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+    <span className="text-sm font-medium text-gray-500">{label}</span>
+    <span className={`text-sm ${className || "text-gray-700"}`}>{value || "N/A"}</span>
+  </div>
 );
 
 export default OrderDetails;
