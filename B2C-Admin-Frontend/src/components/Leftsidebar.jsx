@@ -1,5 +1,5 @@
 import React from "react";
-import { FiHome, FiUsers, FiMapPin, FiTruck, FiList, FiGrid, FiLogOut, FiMenu } from "react-icons/fi";
+import { FiHome, FiUsers, FiMapPin, FiTruck, FiList, FiGrid, FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import headlogo from "../assets/headlogo.png";
 import { signOut } from "firebase/auth";
