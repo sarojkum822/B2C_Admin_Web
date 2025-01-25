@@ -68,7 +68,7 @@ const Dashboard = () => {
         <StatsCard title="Customers Insight" value="28,232" percentage="+1.0%" color="yellow" />
       </div>
 
-      <OrderDashboard />
+      {/* <OrderDashboard /> */}
       
       <OrdersTable />
 

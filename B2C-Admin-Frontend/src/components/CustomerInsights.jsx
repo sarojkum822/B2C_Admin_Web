@@ -357,7 +357,7 @@ const CustomerInsights = () => {
   } = data;
 
   return (
-    <div className="p-6">
+    <div className="p-6 m-2 bg-gray-100 ">
       <h1 className="text-3xl font-semibold mb-6">Customer Insights</h1>
 
       {/* Three Info Boxes */}
