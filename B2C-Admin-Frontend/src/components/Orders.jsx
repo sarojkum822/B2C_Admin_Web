@@ -85,7 +85,7 @@ const Orders = () => {
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-md m-2">
         {!loading && !error && (
           <table className="min-w-full bg-white border">
             <thead>
@@ -120,7 +120,7 @@ const Orders = () => {
                 >
                   Order Date
                 </th>
-                <th className="p-4 text-left">Actions</th>
+                <th className="p-4 text-left flex justify-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -128,10 +128,10 @@ const Orders = () => {
                 sortedOrders.map((order, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-100 transition duration-200 cursor-pointer"
+                    className="hover:bg-gray-100 transition duration-200 border-b  border-collapse cursor-pointer"
                     onClick={() => navigate(`/order/${order.id}`)}
                   >
-                    <td className="p-4 border-b">{order.id}</td>
+                    <td className="p-4 border-b ">{order.id}</td>
                     <td className="p-4 border-b">
                       {Object.entries(order.products)
                         .map(([key, value]) => `${key}: ${value}`)
@@ -139,10 +139,10 @@ const Orders = () => {
                     </td>
                     <td className="p-4 border-b">Rs {order.amount}</td>
                     <td className="p-4 border-b">{order.status}</td>
-                    <td className="p-4 border-b">
+                    <td className="p-4 border-b border-r">
                       {new Date(order.createdAt._seconds * 1000).toLocaleDateString()}
                     </td>
-                    <td className="p-4 border-b flex space-x-2">
+                    <td className="p-4 justify-center flex space-x-4">
                       <FaEdit
                         onClick={(e) => {
                           e.stopPropagation();

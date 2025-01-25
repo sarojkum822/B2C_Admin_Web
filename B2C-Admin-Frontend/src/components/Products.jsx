@@ -6,15 +6,24 @@ const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null); // Stores the product being edited
-  const [updatedValues, setUpdatedValues] = useState({ rate: "", discount: "", countInStock: "" }); // Fix the field name here
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [updatedValues, setUpdatedValues] = useState({
+    rate: "",
+    discount: "",
+    countInStock: "",
+  });
 
-  // Fetch products from the API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("https://b2c-backend-1.onrender.com/api/v1/admin/getallproducts");
-        setProducts(response.data); // Assuming API returns an array of products
+        const response = await fetch(
+          "https://b2c-backend-1.onrender.com/api/v1/admin/getallproducts"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data);
       } catch (err) {
         setError("Failed to fetch products. Please try again later.");
       } finally {
@@ -25,32 +34,35 @@ const ProductsPage = () => {
     fetchProducts();
   }, []);
 
-  // Handle edit button click
   const handleEdit = (product) => {
-    setEditingProduct(product); // Set the product being edited
-    setUpdatedValues({ rate: product.rate, discount: product.discount, countInStock: product.countInStock }); // Include countInStock here
+    setEditingProduct(product);
+    setUpdatedValues({
+      rate: product.rate,
+      discount: product.discount,
+      countInStock: product.countInStock,
+    });
   };
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUpdatedValues({ ...updatedValues, [name]: value });
   };
 
-  // Handle save button click
   const handleSave = async () => {
     try {
       const { id } = editingProduct;
-      await axios.patch(`https://b2c-backend-1.onrender.com/api/v1/admin/changeproductprice/${id}`, updatedValues);
+      await axios.patch(
+        `https://b2c-backend-1.onrender.com/api/v1/admin/changeproductprice/${id}`,
+        updatedValues
+      );
 
-      // Update the product list locally after successful API call
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product.id === id ? { ...product, ...updatedValues } : product
         )
       );
 
-      setEditingProduct(null); // Exit editing mode
+      setEditingProduct(null);
       toast.success("Product updated successfully!");
     } catch (err) {
       console.error("Error updating product:", err.message);
@@ -59,48 +71,83 @@ const ProductsPage = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-600">
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center text-red-600 font-bold mt-10">{error}</div>;
+    return (
+      <div className="text-center text-red-600 font-bold mt-10">{error}</div>
+    );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Products</h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow"
-          >
-            <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-            <p className="text-gray-700 mb-1">
-              <span className="font-bold">Price:</span> ${product.rate}
-            </p>
-            <p className="text-gray-700 mb-1">
-              <span className="font-bold">Discount:</span> {product.discount}%
-            </p>
-            <p className="text-gray-700 mb-1">
-              <span className="font-bold">In Stock:</span> {product.countInStock}
-            </p>
-            <button
-              onClick={() => handleEdit(product)}
-              className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-            >
-              Edit
-            </button>
-          </div>
-        ))}
+    <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-950">
+        Products Management
+      </h1>
+      <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-200">
+        <table className="min-w-full bg-white divide-y divide-gray-200">
+          <thead className="bg-gray-100 text-black">
+            <tr>
+              <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium uppercase">
+                Name
+              </th>
+              <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium uppercase">
+                Price
+              </th>
+              <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium uppercase">
+                Discount
+              </th>
+              <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium uppercase">
+                In Stock
+              </th>
+              <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium uppercase">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {products.map((product) => (
+              <tr
+                key={product.id}
+                className="hover:bg-orange-200 font-medium text-sm"
+              >
+                <td className="px-4 sm:px-6 py-4 text-gray-700">
+                  {product.name}
+                </td>
+                <td className="px-4 sm:px-6 py-4 text-gray-700">
+                  ${product.rate}
+                </td>
+                <td className="px-4 sm:px-6 py-4 text-gray-700">
+                  {product.discount}%
+                </td>
+                <td className="px-4 sm:px-6 py-4 text-gray-700">
+                  {product.countInStock}
+                </td>
+                <td className="px-4 sm:px-6 py-4">
+                  <button
+                    onClick={() => handleEdit(product)}
+                    className="bg-orange-500 text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded hover:bg-orange-600 transition"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Edit Form Modal */}
       {editingProduct && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-end z-50">
-          <div className="bg-white w-1/3 h-full p-6">
-            <h2 className="text-2xl font-bold mb-4">Edit Product</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white w-full max-w-md p-4 sm:p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg sm:text-xl font-bold mb-4 text-gray-800">
+              Edit Product
+            </h2>
             <div className="mb-4">
               <label htmlFor="rate" className="block font-medium mb-2">
                 Rate:
@@ -111,7 +158,7 @@ const ProductsPage = () => {
                 id="rate"
                 value={updatedValues.rate}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Enter new rate"
               />
             </div>
@@ -125,7 +172,7 @@ const ProductsPage = () => {
                 id="discount"
                 value={updatedValues.discount}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter new discount"
               />
             </div>
@@ -139,20 +186,20 @@ const ProductsPage = () => {
                 id="countInStock"
                 value={updatedValues.countInStock}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter the count in stock"
               />
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-4">
               <button
                 onClick={handleSave}
-                className="bg-green-500 text-white px-4 py-2 rounded mr-2"
+                className="bg-green-500 text-white px-4 py-2 text-sm rounded hover:bg-green-600 transition"
               >
                 Save
               </button>
               <button
                 onClick={() => setEditingProduct(null)}
-                className="bg-red-500 text-white px-4 py-2 rounded"
+                className="bg-red-500 text-white px-4 py-2 text-sm rounded hover:bg-red-600 transition"
               >
                 Cancel
               </button>

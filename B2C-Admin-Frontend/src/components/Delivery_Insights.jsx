@@ -8,7 +8,9 @@ import clock from "../assets/Images/Clock.png";
 import plus from "../assets/Images/Plus.png";
 import naruto from "../assets/Images/Naruto.jpg";
 import Leftsidebar from "./Leftsidebar";
+import { toast } from "react-toastify";
 
+import { useNavigate } from "react-router-dom";
 // Setting up the custom marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -21,36 +23,20 @@ L.Icon.Default.mergeOptions({
 });
 
 // Sample coordinates for outlets in Bengaluru
-const outlets = [
-  {
-    id: 1,
-    name: "Outlet 1 - HSR Layout",
-    position: [12.9141, 77.6411],
-    description: "Located in the heart of HSR Layout.",
-  },
-  {
-    id: 2,
-    name: "Outlet 2 - Electronic City",
-    position: [12.8252, 77.6833],
-    description: "Serving the Electronic City area.",
-  },
-  {
-    id: 3,
-    name: "Outlet 3 - Whitefield",
-    position: [12.9675, 77.75],
-    description: "Located near Whitefield IT Park.",
-  },
-  {
-    id: 4,
-    name: "Outlet 4 - Koramangala",
-    position: [12.9352, 77.6245],
-    description: "Central Koramangala outlet.",
-  },
-  // Add more outlets as needed
-];
 
 const DeliveryInsights = () => {
   const [showAddPartnerForm, setShowAddPartnerForm] = useState(false);
+
+  const [deliveries, setDeliveries] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [deliveryOverview, setDeliveryOverview] = useState({});
+  const [selectedPartner, setSelectedPartner] = useState(null);
+  const [deliveryList, setDeliveryList] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState("All");
+
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleAddPartnerClick = () => {
     setShowAddPartnerForm(true);
@@ -59,12 +45,8 @@ const DeliveryInsights = () => {
   const handleCloseForm = () => {
     setShowAddPartnerForm(false);
   };
-  const [deliveries, setDeliveries] = useState([]);
-  const [partners, setPartners] = useState([]);
-  const [deliveryOverview, setDeliveryOverview] = useState({});
-  const [selectedPartner, setSelectedPartner] = useState(null);
-  const [deliveryList, setDeliveryList] = useState([]);
-  const [selectedRegion, setSelectedRegion] = useState("All");
+
+ 
 
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
@@ -75,129 +57,64 @@ const DeliveryInsights = () => {
   };
 
   useEffect(() => {
-    const fetchDeliveryOverview = async () => {
-      const data = {
-        totalDeliveries: 1835,
-        deliveryPartners: 96,
-        avgDeliveryTime: "43.5 mins",
-      };
-      setDeliveryOverview(data);
+    const data = {
+      totalDeliveries: 1835,
+      deliveryPartners: 96,
+      avgDeliveryTime: "43.5 mins",
     };
-
-    const fetchDeliveryPartners = async () => {
-      const data = [
-        {
-          id: 21,
-          name: "Naruto Uzumaki",
-          region: "Electronic City",
-          rating: 4.5,
-          deliveries: 52,
-        },
-        {
-          id: 16,
-          name: "Sakura Haruno",
-          region: "HSR Layout",
-          rating: 4.8,
-          deliveries: 21,
-        },
-        {
-          id: 9,
-          name: "Sasuke Uchiha",
-          region: "Whitefield",
-          rating: 4.2,
-          deliveries: 9,
-        },
-        {
-          id: 32,
-          name: "Kakashi Hatake",
-          region: "Koramangala",
-          rating: 4.6,
-          deliveries: 12,
-        },
-        {
-          id: 23,
-          name: "Might Guy",
-          region: "Koramangala",
-          rating: 4.6,
-          deliveries: 6,
-        },
-        {
-          id: 90,
-          name: "Itachi Ucchiha",
-          region: "Whitefield",
-          rating: 4.6,
-          deliveries: 21,
-        },
-        {
-          id: 61,
-          name: "Sarada Uchhiha",
-          region: "HSR Layout",
-          rating: 4.6,
-          deliveries: 12,
-        },
-        {
-          id: 32,
-          name: "Boruto uzumaki",
-          region: "Electronic City",
-          rating: 4.9,
-          deliveries: 20,
-        },
-      ];
-      setPartners(data);
-    };
-
-    const fetchDeliveryList = async () => {
-      const data = [
-        {
-          id: "#53200002",
-          details: "12 Pc Egg Tray, 6 Pcs Egg Tray",
-          price: "Rs 209",
-          time: "On-Time",
-        },
-        {
-          id: "#53200005",
-          details: "30 Pc Egg Tray",
-          price: "Rs 315",
-          time: "Late",
-        },
-        {
-          id: "#53200345",
-          details: "12 Pc Egg Tray, 30 Pcs Egg Tray",
-          price: "Rs 420",
-          time: "On-Time",
-        },
-        {
-          id: "#53200016",
-          details: "6 Pcs Egg Tray",
-          price: "Rs 99",
-          time: "On-Time",
-        },
-        {
-          id: "#53200016",
-          details: "6 Pcs Egg Tray",
-          price: "Rs 99",
-          time: "On-Time",
-        },
-        {
-          id: "#53200016",
-          details: "6 Pcs Egg Tray",
-          price: "Rs 99",
-          time: "On-Time",
-        },
-        {
-          id: "#53200016",
-          details: "6 Pcs Egg Tray",
-          price: "Rs 99",
-          time: "On-Time",
-        },
-      ];
-      setDeliveryList(data);
-    };
-
-    fetchDeliveryOverview();
-    fetchDeliveryPartners();
-    fetchDeliveryList();
+    setDeliveryOverview(data);
   }, []);
+  //   const fetchDeliveryList = async () => {
+  //     const data = [
+  //       {
+  //         id: "#53200002",
+  //         details: "12 Pc Egg Tray, 6 Pcs Egg Tray",
+  //         price: "Rs 209",
+  //         time: "On-Time",
+  //       },
+  //       {
+  //         id: "#53200005",
+  //         details: "30 Pc Egg Tray",
+  //         price: "Rs 315",
+  //         time: "Late",
+  //       },
+  //       {
+  //         id: "#53200345",
+  //         details: "12 Pc Egg Tray, 30 Pcs Egg Tray",
+  //         price: "Rs 420",
+  //         time: "On-Time",
+  //       },
+  //       {
+  //         id: "#53200016",
+  //         details: "6 Pcs Egg Tray",
+  //         price: "Rs 99",
+  //         time: "On-Time",
+  //       },
+  //       {
+  //         id: "#53200016",
+  //         details: "6 Pcs Egg Tray",
+  //         price: "Rs 99",
+  //         time: "On-Time",
+  //       },
+  //       {
+  //         id: "#53200016",
+  //         details: "6 Pcs Egg Tray",
+  //         price: "Rs 99",
+  //         time: "On-Time",
+  //       },
+  //       {
+  //         id: "#53200016",
+  //         details: "6 Pcs Egg Tray",
+  //         price: "Rs 99",
+  //         time: "On-Time",
+  //       },
+  //     ];
+  //     setDeliveryList(data);
+  //   };
+
+  //   fetchDeliveryOverview();
+  //   fetchDeliveryList();
+  // }, []);
 
   // Filter partners based on selected region
   const filteredPartners =
@@ -210,53 +127,93 @@ const DeliveryInsights = () => {
     setSelectedPartner(partner);
   };
 
+  const [data, setData] = useState([]);
+  const [TotalDeliveries, setTotalDeliveries] = useState("");
+  const [totalDrivers, settotalDrivers] = useState("");
+  const [partnerDetails, setpartnerDetails] = useState([]);
+  const [error,setError] = useState(true);
+
+  const fetchDeliveryPartners = async () => {
+    setLoading(true); // Show a loading state while fetching
+    setError(null); // Reset any previous error
+    try {
+      const response = await fetch(
+        "https://b2c-backend-1.onrender.com/api/v1/admin/deliveryInsights"
+      );
+  
+      if (!response.ok) {
+        // Check if response is not successful
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const partnerDetails = await response.json();
+      console.log("partnerDetails", partnerDetails);
+      console.log("TotalDeliveries", partnerDetails.totalDeliveries);
+      console.log("totalDrivers", partnerDetails.totalDrivers);
+  
+      settotalDrivers(partnerDetails.totalDrivers);
+      setTotalDeliveries(partnerDetails.totalDeliveries);
+      setData(partnerDetails.drivers);
+    } catch (error) {
+      console.error("API error:", error);
+      setError("Failed to fetch delivery partners. Please try again later.");
+    } finally {
+      setLoading(false); // End loading state
+    }
+  };
+  
+  useEffect(() => {
+    fetchDeliveryPartners();
+  }, []);
+  useEffect(() => {
+    console.log("data", data);
+  }, [data]);
+
   return (
     <div className="flex min-h-screen min-w-screen  lg:pl-3  round">
       {/* <div>
-        <Leftsidebar />
-      </div> */}
+          <Leftsidebar />
+        </div> */}
       <div className=" w-full ">
         <div className="flex flex-col p-4 space-y-6 ">
           {/* Delivery Header Section */}
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center ">
             <h1 className="text-2xl font-bold text-gray-700 flex items-center ml-[10px]">
-              Delivery
+              Delivery Partner
             </h1>
           </div>
 
           {/* Overview Section */}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 md:px-6">
-            <div className="bg-white shadow-lg h-36 rounded-lg flex justify-between items-center transition-transform duration-300 hover:shadow-lg hover:translate-y-[-5px]">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-10 md:px-6">
+            <div className="bg-white shadow-lg h-28 rounded-lg flex justify-between items-center transition-transform duration-300 hover:shadow-lg hover:translate-y-[-5px]">
               <div className="bg-white shadow-md p-3 lg:p-6 rounded-lg flex justify-between items-center w-full h-full">
                 <div>
                   <h2 className="text-lg lg:text-xl font-bold text-gray-700">
                     Total Deliveries
                   </h2>
                   <p className="text-xl lg:text-3xl font-bold text-gray-900 mt-2">
-                    {deliveryOverview.totalDeliveries || 0}
+                    {TotalDeliveries || 0}
                   </p>
                 </div>
                 <img src={delivery} className="w-9 h-9 lg:w-12 lg:h-12" />
               </div>
             </div>
-
-            <div className="bg-white shadow-lg h-36 rounded-lg flex justify-between items-center transition-transform duration-300 hover:shadow-lg hover:translate-y-[-5px]">
-              <div className="bg-white shadow-md p-3 lg:p-6 rounded-lg flex justify-between  items-center w-full h-full">
+            <div className="bg-white shadow-lg h-28 rounded-lg flex justify-between items-center transition-transform duration-300 hover:shadow-lg hover:translate-y-[-5px]">
+              <div className="bg-white shadow-md p-3 lg:p-6 rounded-lg flex justify-between items-center w-full h-full">
                 <div>
                   <h2 className="text-lg lg:text-xl font-bold text-gray-700">
                     Delivery Partners
                   </h2>
                   <p className="text-xl lg:text-3xl font-bold text-gray-900 mt-2">
-                    {deliveryOverview.deliveryPartners || 0}
+                    {totalDrivers || 0}
                   </p>
                 </div>
                 <img src={partner} className="w-9 h-9 lg:w-12 lg:h-12" />
               </div>
             </div>
-
-            <div className="bg-white shadow-lg h-36 rounded-lg flex justify-between items-center transition-transform duration-300 hover:shadow-lg hover:translate-y-[-5px]">
-              <div className="bg-white shadow-md p-3 lg:p-6 rounded-lg  flex justify-between  items-center w-full h-full">
+            <div className="bg-white shadow-lg h-28 rounded-lg flex justify-between items-center transition-transform duration-300 hover:shadow-lg hover:translate-y-[-5px]">
+              <div className="bg-white shadow-md p-4 lg:p-6 rounded-lg flex justify-between items-center w-full h-full">
                 <div>
                   <h2 className="text-lg lg:text-xl font-bold text-gray-700">
                     Average Delivery Time
@@ -271,15 +228,17 @@ const DeliveryInsights = () => {
           </div>
 
           {/* Delivery Partners Table */}
-          <div className="flex flex-col md:flex-row justify-center items-center md:space-x-6 min-w-screen md:px-6">
+          <div className="flex flex-col md:flex-row w-full justify-center items-center md:space-x-6 min-w-screen md:px-6 ">
             {/* Table Section */}
-            <div className="w-full md:w-2/3 bg-white shadow-md rounded-lg p-4 mb-4 md:mb-0">
+            <div className="w-full bg-white shadow-md rounded-lg p-4 mb-4 md:mb-0 border-2">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex-col   space-y-4  items-center ">
+                <div className="flex-col space-y-4 items-center">
                   <div className="flex space-x-2 md:space-x-4">
+
                     <h2 className="text-base md:text-lg font-semibold text-gray-700">
                       Delivery Partners
                     </h2>
+
                     <button onClick={handleAddPartnerClick}>
                       <img
                         src={plus}
@@ -310,76 +269,107 @@ const DeliveryInsights = () => {
                   </div>
                 </div>
               </div>
-              <div className="max-h-52 overflow-y-auto custom-scrollbar">
+              <div className="max-h-85 overflow-y-auto custom-scrollbar shadow-lg rounded-lg border border-gray-200">
                 {/* Set max height for scroll */}
                 <table className="w-full text-xs md:text-sm text-gray-600">
-                  <thead className="bg-gray-100 text-gray-800 sticky top-0 z-10">
-                    {/* Keep header fixed */}
+                  <thead className="bg-gray-100 text-gray-800 sticky top-0 z-10 shadow-md">
                     <tr className="text-left">
-                      <th className="px-2 md:px-4 py-1 md:py-2">Id</th>
-                      <th className="px-2 md:px-4 py-1 md:py-2">Name</th>
-                      <th className="px-2 md:px-4 py-1 md:py-2">Region</th>
-                      <th className="px-2 md:px-4 py-1 md:py-2">Rating</th>
-                      <th className="px-2 md:px-4 py-1 md:py-2">Deliveries</th>
+                      <th className="px-4 py-2 font-semibold">Id</th>
+                      <th className="px-4 py-2 font-semibold">Name</th>
+                      <th className="px-4 py-2 font-semibold">Region</th>
+                      <th className="px-4 py-2 font-semibold">Rating</th>
+                      <th className="px-4 py-2 font-semibold">Deliveries</th>
+                      <th className="px-4 py-2 font-semibold">
+                        Verification Status
+                      </th>
+                      <th className="px-4 py-2 font-semibold">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredPartners.map((partner, index) => (
-                      <tr
-                        key={index}
-                        className="hover:bg-gray-50 border-b cursor-pointer "
-                        onClick={() => handlePartnerClick(partner)}
-                      >
-                        <td className="px-2 md:px-4 py-1 md:py-2">
-                          {partner.id}
-                        </td>
-                        <td className="px-2 md:px-4 py-1 md:py-2">
-                          {partner.name}
-                        </td>
-                        <td className="px-2 py-1 md:px-4 md:py-2">
-                          {partner.region}
-                        </td>
-                        <td className="px-2 py-1 md:px-4 md:py-2">
-                          {partner.rating}
-                        </td>
-                        <td className="px-2 py-1 md:px-4 md:py-2">
-                          {partner.deliveries}
-                        </td>
-                      </tr>
-                    ))}
+                    {data.map((driver) => {
+                      const approvalStatus = Object.keys(driver.approved).every(
+                        (key) => driver.approved[key] === true
+                      )
+                        ? "Approved"
+                        : "Pending";
+                      return (
+                        <tr
+                          key={driver.id}
+                          onClick={() =>
+                            navigate(`/delivery-partner/${driver.id}`)
+                          }
+                          className="hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200"
+                        >
+                          <td className="px-4 py-3">{driver.id}</td>
+                          <td className="px-4 py-3">{driver.name}</td>
+                          <td className="px-4 py-3">{driver.region}</td>
+                          <td className="px-4 py-3">{driver.ratings}</td>
+                          <td className="px-4 py-3">
+                            {driver.totalDeliveries}
+                          </td>
+                          <td className="px-4 py-3">{approvalStatus}</td>
+                          {/* New Approval Action Column */}
+                          <td className="px-4 py-3">
+                            {approvalStatus === "Pending" ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevents the click from triggering row navigation
+                                  handleApprovePartner(driver.id);
+                                }}
+                                className="bg-orange-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
+                              >
+                                Approve
+                              </button>
+                            ) : (
+                              <span className="text-green-600 font-semibold">
+                                ✓ Verified
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
             </div>
 
             {/* Map Section */}
-            <div className="w-full md:w-1/3 bg-white shadow-md rounded-lg p-4 z-0">
-              <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-2">
-                Location Map
-              </h2>
-              <div className="h-48 md:h-[270px]">
-                <MapContainer
-                  center={[12.9141, 77.6411]} // Centered around HSR Layout
-                  zoom={12}
-                  scrollWheelZoom={true}
-                  style={{ height: "100%", width: "100%", zIndex: 1 }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  />
-                  {outlets.map((outlet) => (
-                    <Marker key={outlet.id} position={outlet.position}>
-                      <Popup>
-                        <strong>{outlet.name}</strong>
-                        <br />
-                        {outlet.description}
-                      </Popup>
-                    </Marker>
-                  ))}
-                </MapContainer>
-              </div>
-            </div>
+            {/* <div className="w-full md:w-1/3 bg-white shadow-md rounded-lg p-4 z-0">
+                <h2 className="text-base md:text-lg font-semibold text-gray-700 mb-2">
+                  Location Map
+                </h2>
+                <div className="h-48 md:h-[270px]">
+                  <MapContainer
+                    center={[12.9141, 77.6411]} // Centered around HSR Layout
+                    zoom={12}
+                    scrollWheelZoom={true}
+                    style={{ height: "100%", width: "100%", zIndex: 1 }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    {outlets.map((outlet) => (
+                      <Marker key={outlet.id} position={outlet.position}>
+                        <Popup>
+                          <strong>{outlet.name}</strong>
+                          <br />
+                          {outlet.description}
+                        </Popup>
+                      </Marker>
+                    ))}
+                  </MapContainer>
+                </div>
+              </div> */}
+
+            {/* <div className="status border-2 rounded-md shadow-md w-[27rem] h-[21rem]">
+                  <div className="">
+                  <h1 className="text-[1.2rem] m-2 border-b-2 font-medium">Verification Status</h1>
+                  </div>
+
+
+              </div> */}
 
             {/* Modal Section */}
             {showAddPartnerForm && (
@@ -416,26 +406,6 @@ const DeliveryInsights = () => {
                         type="text"
                         placeholder="First Name"
                         className="border border-gray-300 rounded w-full p-1 md:p-2"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Last Name"
-                        className="border border-gray-300 rounded w-full p-1 md:p-2"
-                      />
-                    </div>
-
-                    <div className="flex space-x-2 md:space-x-4">
-                      <input
-                        type="text"
-                        placeholder="Driver License"
-                        className="border border-gray-300 rounded w-full p-1 md:p-2"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Unique Password"
-                        className="border border-gray-300 rounded w-full p-1 md:p-2"
-                        value="DP_85"
-                        readOnly
                       />
                     </div>
 
