@@ -4,16 +4,19 @@ import { fetchOutletDetails } from '../redux/outletDetails';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const OutletPartnerDetails = () => {
   const dispatch = useDispatch();
   const { outletData } = useSelector((state) => state.outletDetails);
 
+  const navigate  = useNavigate()
+
   const handleDeleteOutlet=async(id)=>{
     try {
       const res = await axios.delete(`https://b2c-backend-1.onrender.com/api/v1/admin/outlet/delete/${id}`)
-      navigate('/outlet')
       toast.success("outlet deleted succesfully")
+      navigate('/dashboard')
     } catch (error) {
       console.log(error);
       toast.error("Cannot delete delivery partner")
