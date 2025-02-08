@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../Firebase/firebase';
 import { useNavigate } from 'react-router-dom';
-
+import Orders from './Orders'
 const Dashboard = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -70,7 +70,9 @@ const Dashboard = () => {
 
       {/* <OrderDashboard /> */}
       
-      <OrdersTable />
+      {/* <OrdersTable />
+       */}
+       <Orders/>
 
       <BestsellersTable />
     </div>

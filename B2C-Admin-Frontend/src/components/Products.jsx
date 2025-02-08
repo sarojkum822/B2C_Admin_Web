@@ -13,6 +13,8 @@ const ProductsPage = () => {
     countInStock: "",
   });
 
+  console.log(products);
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -37,7 +39,7 @@ const ProductsPage = () => {
   const handleEdit = (product) => {
     setEditingProduct(product);
     setUpdatedValues({
-      rate: product.rate,
+      rate: product.price,
       discount: product.discount,
       countInStock: product.countInStock,
     });
@@ -120,7 +122,7 @@ const ProductsPage = () => {
                   {product.name}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
-                  ${product.rate}
+                  ${product.price}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
                   {product.discount}%
@@ -156,7 +158,7 @@ const ProductsPage = () => {
                 type="number"
                 name="rate"
                 id="rate"
-                value={updatedValues.rate}
+                value={updatedValues.price}
                 onChange={handleInputChange}
                 className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Enter new rate"
