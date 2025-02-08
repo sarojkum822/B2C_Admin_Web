@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import axios from 'axios'
 
 import { useNavigate } from "react-router-dom";
+import { FaTrashAlt } from "react-icons/fa";
 // Setting up the custom marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -209,6 +210,18 @@ const DeliveryInsights = () => {
     console.log("data", data);
   }, [data]);
 
+  const handleDeleteDeleveryPartner=async(id)=>{
+    try {
+      const res = await axios.delete(`https://b2c-backend-1.onrender.com/api/v1/admin/deliverypartner/delete/${id}`)
+      console.log(res);
+      navigate('/delivery-insights')
+      toast.success("delivery Partner deleted")
+    } catch (error) {
+      console.log(error);
+      toast.error("Cannot delete delivery partner")
+    }
+  }
+
   return (
     <div className="flex min-h-screen min-w-screen  lg:pl-3  round">
       {/* <div>
@@ -323,6 +336,7 @@ const DeliveryInsights = () => {
                         Verification Status
                       </th>
                       <th className="px-4 py-2 font-semibold">Actions</th>
+                      <th className="px-4 py-2 font-semibold">Delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -365,6 +379,11 @@ const DeliveryInsights = () => {
                                 ✓ Verified
                               </span>
                             )}
+                          </td>
+                          <td>
+                            <button className="w-full flex justify-center " onClick={(e)=>handleDeleteDeleveryPartner(driver.id)}>
+                              <FaTrashAlt color="red" size={15} />
+                            </button >
                           </td>
                         </tr>
                       );

@@ -2,11 +2,22 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchOutletDetails } from '../redux/outletDetails';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const OutletPartnerDetails = () => {
   const dispatch = useDispatch();
   const { outletData } = useSelector((state) => state.outletDetails);
 
+  const handleDeleteOutlet=async(id)=>{
+    try {
+      const res = await axios.delete(`https://b2c-backend-1.onrender.com/api/v1/admin/outlet/delete/${id}`)
+      navigate('/outlet')
+      toast.success("outlet deleted succesfully")
+    } catch (error) {
+      console.log(error);
+      toast.error("Cannot delete delivery partner")
+    }
+  }
   return (
     <>
       <div className="shadow-md rounded-lg p-4 m-4 ml-4 sm:ml-10 mt-4 border-2">
@@ -47,7 +58,7 @@ const OutletPartnerDetails = () => {
                     <button className="text-blue-500 hover:text-blue-600">
                       <FaEdit />
                     </button>
-                    <button className="text-red-500 hover:text-red-600">
+                    <button className="text-red-500 hover:text-red-600" onClick={(e)=>handleDeleteOutlet(outlet.id)}>
                       <FaTrashAlt />
                     </button>
                   </td>
