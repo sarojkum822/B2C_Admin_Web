@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchOutletDetails } from '../redux/outletDetails';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const OutletPartnerDetails = () => {
   const dispatch = useDispatch();
