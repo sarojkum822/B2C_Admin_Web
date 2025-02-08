@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -52,11 +53,20 @@ const Orders = () => {
     setSortConfig({ key, direction });
   };
 
-  const handleDelete = (index) => {
-    const newOrders = orders.filter((_, i) => i !== index);
-    setOrders(newOrders);
-    setSuccessMessage("Order has been successfully deleted");
-    setTimeout(() => setSuccessMessage(""), 3000);
+  const handleDelete =async (id) => {
+    try {
+      const res = await axios.delete(`https://b2c-backend-1.onrender.com/api/v1/admin/order/delete/${id}`)
+      console.log(res);
+      navigate('/dashboard')
+      toast.success("Order has been successfully deleted")
+      setSuccessMessage("Order has been successfully deleted");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.log(error);
+      setSuccessMessage("Order cannot be delete");
+      setTimeout(() => setSuccessMessage(""), 3000);
+      toast.error("Order cannot be delete")
+    }
   };
 
   const handleEdit = (index) => {
@@ -153,7 +163,7 @@ const Orders = () => {
                       <FaTrash
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(index);
+                          handleDelete(order.id);
                         }}
                         className="text-red-500 cursor-pointer"
                       />
