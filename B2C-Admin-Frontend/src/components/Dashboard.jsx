@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../Firebase/firebase';
 import { useNavigate } from 'react-router-dom';
-
+import Orders from './Orders'
 const Dashboard = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -38,7 +38,7 @@ const Dashboard = () => {
   },[auth,onAuthStateChanged])
 
   return (
-    <div className="flex-grow bg-[#f8f8f8] p-4 lg:p-6 relative">
+    <div className="flex-grow bg-[#f8f8f8] p-4 lg:p-6 relative m-2">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
         <h1 className="text-2xl font-bold mb-4 lg:mb-0 ml-4">Dashboard</h1>
         {/* <div className="text-sm relative w-full lg:w-auto">
@@ -68,8 +68,12 @@ const Dashboard = () => {
         <StatsCard title="Customers Insight" value="28,232" percentage="+1.0%" color="yellow" />
       </div>
 
-      <OrderDashboard />
-      <OrdersTable />
+      {/* <OrderDashboard /> */}
+      
+      {/* <OrdersTable />
+       */}
+       <Orders/>
+
       <BestsellersTable />
     </div>
   );

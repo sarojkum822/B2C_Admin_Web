@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -52,11 +53,20 @@ const Orders = () => {
     setSortConfig({ key, direction });
   };
 
-  const handleDelete = (index) => {
-    const newOrders = orders.filter((_, i) => i !== index);
-    setOrders(newOrders);
-    setSuccessMessage("Order has been successfully deleted");
-    setTimeout(() => setSuccessMessage(""), 3000);
+  const handleDelete =async (id) => {
+    try {
+      const res = await axios.delete(`https://b2c-backend-1.onrender.com/api/v1/admin/order/delete/${id}`)
+      console.log(res);
+      navigate('/dashboard')
+      toast.success("Order has been successfully deleted")
+      setSuccessMessage("Order has been successfully deleted");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.log(error);
+      setSuccessMessage("Order cannot be delete");
+      setTimeout(() => setSuccessMessage(""), 3000);
+      toast.error("Order cannot be delete")
+    }
   };
 
   const handleEdit = (index) => {
@@ -85,7 +95,7 @@ const Orders = () => {
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-md m-2">
         {!loading && !error && (
           <table className="min-w-full bg-white border">
             <thead>
@@ -120,7 +130,7 @@ const Orders = () => {
                 >
                   Order Date
                 </th>
-                <th className="p-4 text-left">Actions</th>
+                <th className="p-4 text-left flex justify-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -128,10 +138,10 @@ const Orders = () => {
                 sortedOrders.map((order, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-100 transition duration-200 cursor-pointer"
+                    className="hover:bg-gray-100 transition duration-200 border-b  border-collapse cursor-pointer"
                     onClick={() => navigate(`/order/${order.id}`)}
                   >
-                    <td className="p-4 border-b">{order.id}</td>
+                    <td className="p-4 border-b ">{order.id}</td>
                     <td className="p-4 border-b">
                       {Object.entries(order.products)
                         .map(([key, value]) => `${key}: ${value}`)
@@ -139,10 +149,10 @@ const Orders = () => {
                     </td>
                     <td className="p-4 border-b">Rs {order.amount}</td>
                     <td className="p-4 border-b">{order.status}</td>
-                    <td className="p-4 border-b">
+                    <td className="p-4 border-b border-r">
                       {new Date(order.createdAt._seconds * 1000).toLocaleDateString()}
                     </td>
-                    <td className="p-4 border-b flex space-x-2">
+                    <td className="p-4 justify-center flex space-x-4">
                       <FaEdit
                         onClick={(e) => {
                           e.stopPropagation();
@@ -153,7 +163,7 @@ const Orders = () => {
                       <FaTrash
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(index);
+                          handleDelete(order.id);
                         }}
                         className="text-red-500 cursor-pointer"
                       />

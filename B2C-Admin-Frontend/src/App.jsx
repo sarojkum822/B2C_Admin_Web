@@ -11,11 +11,13 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/login";
 import CustomerInsights from "./components/CustomerInsights";
 import DeliveryInsights from "./components/Delivery_Insights";
-import OutletSummary from "./components/OutletDetails_updated";
+// import OutletSummary from "./components/OutletDetails_updated";
+import OutletSummary from "./components/outlet";
 import Orders from "./components/Orders";
 import OrderDetails from "./components/OrderDetails";
 import {ToastContainer} from 'react-toastify'
 import Products from "./components/Products";
+import DeliveryPartnerDetails from "./components/DeliveryPartnerDetails";
 
 
 const App = () => {
@@ -79,6 +81,7 @@ const App = () => {
           <Route path="/orders" element={<Orders/>}/>
           <Route path="/order/:id" element={<OrderDetails/>}/>
           <Route path="/Products" element={<Products/>}/>
+          <Route path="/delivery-partner/:partnerId" element={<DeliveryPartnerDetails />} />
 
           {/* Add more routes here if needed */}
         </Routes>
