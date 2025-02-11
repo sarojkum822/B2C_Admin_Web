@@ -149,7 +149,7 @@ const Orders = () => {
                         .map(({ name, quantity }) => `${name}: ${quantity}`)
                         .join(", ")}
                     </td>
-                    <td className="p-4 border-b">Rs {order.amount}</td>
+                    <td className="p-4 border-b">Rs {Math.round(order.amount)}</td>
                     <td className="p-4 border-b">{order.status}</td>
                     <td className="p-4 border-b border-r">
                          {new Date(order.createdAt._seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}

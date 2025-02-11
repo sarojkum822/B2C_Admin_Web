@@ -20,7 +20,8 @@ const DashboardStatusCard = () => {
 
         getStatus();
     }, []); // Runs only once when the component mounts
-
+    console.log(status);
+    
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -29,9 +30,9 @@ const DashboardStatusCard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <StatsCard title="Revenue" value={`Rs ${status?.totalEarning.toLocaleString()}`} percentage="+22%" color="green" />
             <StatsCard title="Orders" value={status?.totalOrders.toLocaleString()} percentage="-25%" color="red" />
-            <StatsCard title="Inventory" value="15.5K" percentage="+49%" color="green" />
+            <StatsCard title="Inventory" value={status?.totalOutlets.toLocaleString()} percentage="+49%" color="green" />
             <StatsCard title="Customers" value={status?.totalCustomers.toLocaleString()} percentage="+1.0%" color="yellow" />
-            <StatsCard title="Outlets" value={status?.totalOutlets.toLocaleString()} percentage="+3.5%" color="blue" />
+            <StatsCard title="Outlets" value={status?.totalOutletPartners.toLocaleString()} percentage="+3.5%" color="blue" />
         </div>
     );
 };
