@@ -17,7 +17,7 @@ const Orders = () => {
   });
 
   const navigate = useNavigate();
-
+  
   // Fetch orders from API
   useEffect(() => {
     const fetchOrders = async () => {
@@ -36,6 +36,8 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
+  console.log(orders);
+  
   // Sorting function
   const sortedOrders = [...orders].sort((a, b) => {
     if (sortConfig.direction === "ascending") {
@@ -88,7 +90,7 @@ const Orders = () => {
       <h3 className="text-lg font-semibold mb-4">All Orders</h3>
 
       {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-green-500 text-lg font-bold">{`Orders not found`}</p>}
       {successMessage && (
         <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
           {successMessage}
@@ -143,14 +145,14 @@ const Orders = () => {
                   >
                     <td className="p-4 border-b ">{order.id}</td>
                     <td className="p-4 border-b">
-                      {Object.entries(order.products)
-                        .map(([key, value]) => `${key}: ${value}`)
+                      {Object.values(order.products)
+                        .map(({ name, quantity }) => `${name}: ${quantity}`)
                         .join(", ")}
                     </td>
                     <td className="p-4 border-b">Rs {order.amount}</td>
                     <td className="p-4 border-b">{order.status}</td>
                     <td className="p-4 border-b border-r">
-                      {new Date(order.createdAt._seconds * 1000).toLocaleDateString()}
+                         {new Date(order.createdAt._seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </td>
                     <td className="p-4 justify-center flex space-x-4">
                       <FaEdit
