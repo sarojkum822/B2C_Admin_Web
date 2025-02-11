@@ -44,7 +44,7 @@ const OrderDashboard = () => {
             {
               label: 'Total Earnings',
               data: reversedData.map(item => Math.round(item.totalEarnings)), // Round earnings to integer
-              backgroundColor: 'rgba(255, 206, 86, 0.6)',
+              backgroundColor: 'rgba(255, 206, 90, 1)',
               borderColor: 'rgba(255, 206, 86, 1)',
               borderWidth: 1,
             },
@@ -117,7 +117,7 @@ const OrderDashboard = () => {
       <div className="absolute top-4 right-6 flex space-x-2">
         <button
           className={`py-2 px-4 rounded-lg transition duration-300 ${
-            filter === 'week' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            filter === 'week' ? 'bg-yellow-700 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
           onClick={() => setFilter('week')}
         >
@@ -125,7 +125,7 @@ const OrderDashboard = () => {
         </button>
         <button
           className={`py-2 px-4 rounded-lg transition duration-300 ${
-            filter === 'month' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            filter === 'month' ? 'bg-yellow-700 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
           onClick={() => setFilter('month')}
         >
@@ -133,7 +133,7 @@ const OrderDashboard = () => {
         </button>
         <button
           className={`py-2 px-4 rounded-lg transition duration-300 ${
-            filter === 'year' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            filter === 'year' ? 'bg-yellow-700 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
           onClick={() => setFilter('year')}
         >
