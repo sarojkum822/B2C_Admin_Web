@@ -9,15 +9,20 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../Firebase/firebase';
 import { useNavigate } from 'react-router-dom';
 import Orders from './Orders'
+import axios from 'axios';
+import DashboardStatusCart from './DashboardStatusCart';
+
 const Dashboard = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  
 
   const handleToggleCalendar = () => {
     setShowCalendar(!showCalendar);
   };
 
+  
   const handleDateChange = (dates) => {
     const [start, end] = dates;
     setStartDate(start);
@@ -61,12 +66,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatsCard title="Revenue" value="Rs 7,825" percentage="+22%" color="green" />
-        <StatsCard title="Orders" value="920" percentage="-25%" color="red" />
-        <StatsCard title="Inventory" value="15.5K" percentage="+49%" color="green" />
-        <StatsCard title="Customers Insight" value="28,232" percentage="+1.0%" color="yellow" />
-      </div>
+      <DashboardStatusCart/>
 
       <OrderDashboard />
       

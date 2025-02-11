@@ -25,7 +25,8 @@ const OrderDashboard = () => {
     try {
       const response = await fetch(`https://b2c-backend-1.onrender.com/api/v1/admin/orders/summary?filter=${filter}`);
       const data = await response.json();
-
+      console.log(data);
+      
       if (data?.data) {
         const reversedData = data.data.reverse(); // Ensure latest data is rightmost
 

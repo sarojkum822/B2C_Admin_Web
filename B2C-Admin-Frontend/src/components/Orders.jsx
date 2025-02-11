@@ -16,6 +16,7 @@ const Orders = () => {
     direction: "ascending",
   });
 
+  
   const navigate = useNavigate();
   
   // Fetch orders from API
@@ -36,7 +37,6 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
-  console.log(orders);
   
   // Sorting function
   const sortedOrders = [...orders].sort((a, b) => {
