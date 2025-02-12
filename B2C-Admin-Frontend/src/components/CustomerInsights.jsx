@@ -264,7 +264,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaUser, FaUserSlash, FaQuestionCircle } from 'react-icons/fa';
 import ClipLoader from 'react-spinners/ClipLoader';
-
+import axios from 'axios'
 const CustomerInsights = () => {
   const [data, setData] = useState({
     totalCustomers: 0,
@@ -290,33 +290,44 @@ const CustomerInsights = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://b2c-49u4.onrender.com/api/v1/admin/customerInsights');
-        const responseData = await response.json();
-
+        const response = await axios.get('http://localhost:3000/api/v1/admin/customerInsights');
+        const responseData = response?.data || {};
+    
+        console.log(responseData);
+    
+        // Extracting and safely accessing nested data
+        const aggregation = responseData?.aggregation || {};
+        const customers = responseData?.customers || [];
+        const ageGroup = aggregation?.ageGroup || {};
+        const areaArray = aggregation?.areaArray || [];
+    
         setData({
-          totalCustomers: responseData.aggergation.totalCustomers,
-          inactiveCustomers: responseData.aggergation.inactiveCust,
-          customerInquiries: responseData.aggergation.custEnquiry,
-          topCustomers: responseData.customers.map((customer, index) => ({
+          totalCustomers: aggregation?.totalCustomers || 0,
+          inactiveCustomers: aggregation?.inactiveCust || 0,
+          customerInquiries: aggregation?.custEnquiry || 0,
+          topCustomers: customers.map((customer, index) => ({
             rank: index + 1,
-            name: customer.name,
-            orders: customer.totalOrders,
-            spend: customer.totalExpenditure,
-          })) || [],
-          customerAgeGroups: Object.entries(responseData.aggergation.ageGroup).map(([age, percentage]) => ({
+            name: customer?.name || "Unknown",
+            orders: customer?.totalOrders || 0,
+            spend: customer?.totalExpenditure || 0,
+          })),
+          customerAgeGroups: Object.entries(ageGroup).map(([age, percentage]) => ({
             age,
-            percentage,
-          })) || [],
+            percentage: percentage || 0, // Ensuring percentage is a valid number
+          })),
           newVsReturning: {
-            new: responseData.aggergation.newCust,
-            returning: responseData.aggergation.returningCust,
+            new: aggregation?.newCust || 0,
+            returning: aggregation?.returningCust || 0,
           },
           genderDistribution: {
-            male: responseData.aggergation.male,
-            female: responseData.aggergation.female,
-            others: responseData.aggergation.others,
+            male: aggregation?.male || 0,
+            female: aggregation?.female || 0,
+            others: aggregation?.others || 0,
           },
-          areaDistribution: responseData.aggergation.areaArray.map(([area, percentage]) => ({ area, percentage })) || [],
+          areaDistribution: areaArray.map(([area, percentage]) => ({
+            area: area || "Unknown",
+            percentage: percentage || 0,
+          })),
         });
       } catch (err) {
         console.error("Fetch error: ", err);
@@ -325,6 +336,7 @@ const CustomerInsights = () => {
         setLoading(false);
       }
     };
+    
 
     fetchData();
   }, []);
@@ -464,9 +476,9 @@ const CustomerInsights = () => {
                   <th className="p-2">Percentage</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody >
                 {customerAgeGroups.map((group, index) => (
-                  <tr key={index}>
+                  <tr key={index} >
                     <td className="p-2 text-center">{group.age}</td>
                     <td className="p-2 text-center">{group.percentage}%</td>
                   </tr>
@@ -476,7 +488,7 @@ const CustomerInsights = () => {
           </div>
         </div>
 
-        <div className="md:col-span-2 flex flex-col gap-4">
+        <div className="md:col-span-2 flex flex-col gap-4 ">
           {/* Customer Insights Heading */}
           <h2 className="text-2xl font-semibold text-center">Customer Insights</h2>
 
@@ -484,14 +496,14 @@ const CustomerInsights = () => {
           <div className="flex flex-col md:flex-row gap-12">
             {/* New vs Returning Customers */}
             <div className="w-full bg-white shadow-lg p-4 rounded-lg flex-1">
-              <h3 className="text-md font-semibold mb-2">New vs Returning Customers</h3>
-              <div className="flex justify-between items-center">
+              <h3 className="text-md font-semibold mb-2 text-center">New vs Returning Customers</h3>
+              <div className="flex justify-between items-center flex-col">
                 <div className="text-green-600">
-                  <p className="text-2xl font-bold">{newVsReturning.new}%</p>
+                  <p className="text-2xl font-bold">{newVsReturning.new.toFixed(2)}%</p>
                   <p>New Customers</p>
                 </div>
                 <div className="text-blue-600">
-                  <p className="text-2xl font-bold">{newVsReturning.returning}%</p>
+                  <p className="text-2xl font-bold">{newVsReturning.returning.toFixed(2)}%</p>
                   <p>Returning Customers</p>
                 </div>
               </div>
@@ -499,18 +511,18 @@ const CustomerInsights = () => {
 
             {/* Gender Distribution */}
             <div className="bg-white shadow-lg p-4 rounded-lg flex-1">
-              <h3 className="text-md font-semibold mb-2">Gender Distribution</h3>
-              <div className="flex justify-between items-center">
+              <h3 className="text-md font-semibold mb-2 text-center">Gender Distribution</h3>
+              <div className="flex justify-between items-center flex-col">
                 <div className="text-blue-600">
-                  <p className="text-2xl font-bold">{genderDistribution.male}%</p>
+                  <p className="text-2xl font-bold">{genderDistribution.male.toFixed(2)}%</p>
                   <p>Male</p>
                 </div>
                 <div className="text-pink-600">
-                  <p className="text-2xl font-bold">{genderDistribution.female}%</p>
+                  <p className="text-2xl font-bold">{genderDistribution.female.toFixed(2)}%</p>
                   <p>Female</p>
                 </div>
                 <div className="text-gray-600">
-                  <p className="text-2xl font-bold">{genderDistribution.others}%</p>
+                  <p className="text-2xl font-bold">{genderDistribution.others.toFixed(2)}%</p>
                   <p>Others</p>
                 </div>
               </div>
