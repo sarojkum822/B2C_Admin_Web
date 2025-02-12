@@ -290,7 +290,7 @@ const CustomerInsights = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/v1/admin/customerInsights');
+        const response = await axios.get('https://b2c-backend-1.onrender.com/api/v1/admin/customerInsights');
         const responseData = response?.data || {};
     
         console.log(responseData);
