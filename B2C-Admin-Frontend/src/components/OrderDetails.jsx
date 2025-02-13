@@ -10,8 +10,10 @@ const OrderDetails = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`https://b2c-backend-1.onrender.com/api/v1/order/orderdetails/${id}`);
-        
+        const response = await fetch(
+          `https://b2c-backend-1.onrender.com/api/v1/order/orderdetails/${id}`
+        );
+
         if (!response.ok) {
           throw new Error("Failed to fetch order details");
         }
@@ -27,40 +29,48 @@ const OrderDetails = () => {
     fetchOrderDetails();
   }, [id]);
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <p className="text-lg text-gray-600 animate-pulse">Loading...</p>
-    </div>
-  );
-  
-  if (error) return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <p className="text-lg text-red-600 bg-red-50 px-4 py-2 rounded-lg">{error}</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-lg text-gray-600 animate-pulse">Loading...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-lg text-red-600 bg-red-50 px-4 py-2 rounded-lg">
+          {error}
+        </p>
+      </div>
+    );
 
   const { order: orderInfo, customer, outlet } = order || {};
-  
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link 
-                to="/orders" 
+              <Link
+                to="/orders"
                 className="text-gray-600 hover:text-orange-500 transition-colors duration-200 flex items-center gap-2"
               >
                 <span className="text-sm">←</span>
                 <span>Back to Orders</span>
               </Link>
-              <h3 className="text-xl font-semibold text-gray-800">Order Details</h3>
+              <h3 className="text-xl font-semibold text-gray-800">
+                Order Details
+              </h3>
             </div>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              orderInfo?.status === "Delivered" 
-                ? "bg-green-100 text-green-700" 
-                : "bg-orange-100 text-orange-700"
-            }`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                orderInfo?.status === "Delivered"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-orange-100 text-orange-700"
+              }`}
+            >
               {orderInfo?.status}
             </span>
           </div>
@@ -69,25 +79,40 @@ const OrderDetails = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           <OrderSection title="Order Information">
             <Detail label="Order ID" value={orderInfo?.id} />
-            <Detail label="Amount" value={`Rs ${orderInfo?.amount}`} className="font-medium text-gray-900" />
-            <Detail label="Delivery Distance" value={orderInfo?.deleveryDistance} />
+            <Detail
+              label="Amount"
+              value={`Rs ${orderInfo?.amount}`}
+              className="font-medium text-gray-900"
+            />
+            <Detail
+              label="Delivery Distance"
+              value={orderInfo?.deleveryDistance}
+            />
             <Detail
               label="Order Date"
-              value={new Date(orderInfo?.createdAt?._seconds * 1000).toLocaleString()}
+              value={new Date(
+                orderInfo?.createdAt?._seconds * 1000
+              ).toLocaleString()}
             />
             <Detail
               label="Last Updated"
-              value={new Date(orderInfo?.updatedAt?._seconds * 1000).toLocaleString()}
+              value={new Date(
+                orderInfo?.updatedAt?._seconds * 1000
+              ).toLocaleString()}
             />
-            <Detail 
-              label="Delivery Partner" 
+            <Detail
+              label="Delivery Partner"
               value={orderInfo?.deliveryPartnerId ?? "Awaiting acceptance"}
               className={orderInfo?.deliveryPartnerId ? "" : "text-amber-600"}
             />
-            <Detail 
-              label="Accepted by Partner" 
+            <Detail
+              label="Accepted by Partner"
               value={orderInfo?.orderAcceptedByRider ? "Yes" : "No"}
-              className={orderInfo?.orderAcceptedByRider ? "text-green-600" : "text-red-600"}
+              className={
+                orderInfo?.orderAcceptedByRider
+                  ? "text-green-600"
+                  : "text-red-600"
+              }
             />
           </OrderSection>
 
@@ -99,19 +124,24 @@ const OrderDetails = () => {
 
           <OrderSection title="Delivery Address">
             <div className="space-y-2">
-              {Object.entries(orderInfo?.address?.fullAddress || {}).map(([key, value]) => (
-                <Detail key={key} label={key} value={value} />
-              ))}
+              {Object.entries(orderInfo?.address?.fullAddress || {}).map(
+                ([key, value]) => (
+                  <Detail key={key} label={key} value={value} />
+                )
+              )}
             </div>
           </OrderSection>
 
           <OrderSection title="Products">
             <ul className="space-y-3">
-              {Object.entries(orderInfo?.products || {}).map(([key, value]) => (
-                <li key={key} className="flex items-center space-x-2 text-gray-700">
+              {Object.values(orderInfo?.products || {}).map((product) => (
+                <li
+                  key={product.productId}
+                  className="flex items-center space-x-2 text-gray-700"
+                >
                   <span className="w-2 h-2 bg-gray-300 rounded-full"></span>
-                  <span className="font-medium">{key}:</span>
-                  <span>{value}</span>
+                  <span className="font-medium">{product.name}</span>
+                  <span>x {product.quantity}</span>
                 </li>
               ))}
             </ul>
@@ -121,10 +151,14 @@ const OrderDetails = () => {
             <Detail label="Name" value={outlet?.name} />
             <Detail label="Phone" value={outlet?.phNo} />
             <div className="mt-4 pt-4 border-t border-gray-100">
-              <h5 className="text-sm font-medium text-gray-500 mb-2">Address</h5>
-              {Object.entries(orderInfo?.address?.fullAddress || {}).map(([key, value]) => (
-                <Detail key={key} label={key} value={value} />
-              ))}
+              <h5 className="text-sm font-medium text-gray-500 mb-2">
+                Address
+              </h5>
+              {Object.entries(orderInfo?.address?.fullAddress || {}).map(
+                ([key, value]) => (
+                  <Detail key={key} label={key} value={value} />
+                )
+              )}
             </div>
           </OrderSection>
         </div>
@@ -136,16 +170,16 @@ const OrderDetails = () => {
 const OrderSection = ({ title, children }) => (
   <div className="bg-gray-50 rounded-lg p-6">
     <h4 className="text-lg font-semibold text-gray-800 mb-4">{title}</h4>
-    <div className="space-y-3">
-      {children}
-    </div>
+    <div className="space-y-3">{children}</div>
   </div>
 );
 
 const Detail = ({ label, value, className = "" }) => (
   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
     <span className="text-sm font-medium text-gray-500">{label}</span>
-    <span className={`text-sm ${className || "text-gray-700"}`}>{value || "N/A"}</span>
+    <span className={`text-sm ${className || "text-gray-700"}`}>
+      {value || "N/A"}
+    </span>
   </div>
 );
 

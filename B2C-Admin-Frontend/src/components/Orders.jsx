@@ -26,8 +26,9 @@ const Orders = () => {
         const response = await axios.get(
           "https://b2c-49u4.onrender.com/api/v1/order/order"
         );
-        const fetchedOrders = response.data.orders || [];
-        setOrders(fetchedOrders);
+        const fetchedOrderDetails = response.data.orders || [];
+        setOrders(fetchedOrderDetails);
+        console.log(fetchedOrderDetails);
         setLoading(false);
       } catch (error) {
         setError("Failed to load orders. Please try again later.");
@@ -63,6 +64,7 @@ const Orders = () => {
       toast.success("Order has been successfully deleted")
       setSuccessMessage("Order has been successfully deleted");
       setTimeout(() => setSuccessMessage(""), 3000);
+
     } catch (error) {
       console.log(error);
       setSuccessMessage("Order cannot be delete");
