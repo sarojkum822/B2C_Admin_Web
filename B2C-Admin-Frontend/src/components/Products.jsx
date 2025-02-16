@@ -12,32 +12,34 @@ const ProductsPage = () => {
     discount: "",
     countInStock: "",
   });
+  
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(
+        "https://b2c-backend-1.onrender.com/api/v1/admin/getallproducts"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (err) {
+      setError("Failed to fetch products. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          "https://b2c-backend-1.onrender.com/api/v1/admin/getallproducts"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-        const data = await response.json();
-        setProducts(data);
-      } catch (err) {
-        setError("Failed to fetch products. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
   }, []);
 
   const handleEdit = (product) => {
+    console.log(product);
+    
     setEditingProduct(product);
     setUpdatedValues({
-      rate: product.rate,
+      rate: product.price,
       discount: product.discount,
       countInStock: product.countInStock,
     });
@@ -51,7 +53,7 @@ const ProductsPage = () => {
   const handleSave = async () => {
     try {
       const { id } = editingProduct;
-      await axios.patch(
+     const res =  await axios.patch(
         `https://b2c-backend-1.onrender.com/api/v1/admin/changeproductprice/${id}`,
         updatedValues
       );
@@ -63,6 +65,7 @@ const ProductsPage = () => {
       );
 
       setEditingProduct(null);
+      fetchProducts();
       toast.success("Product updated successfully!");
     } catch (err) {
       console.error("Error updating product:", err.message);
@@ -120,7 +123,7 @@ const ProductsPage = () => {
                   {product.name}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
-                  ${product.rate}
+                  ${product.price}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
                   {product.discount}%

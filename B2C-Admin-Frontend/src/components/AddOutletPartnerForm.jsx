@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPartner, resetState } from '../redux/OutletPartnerForm'; // Assuming partnerSlice is in the same folder
 import { toast } from 'react-toastify';
+import { fetchOutletDetails } from '../redux/outletDetails';
 
 const OutletPartnerForm = ({ handleClose }) => {
+
+  const [refresh, setRefresh] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -13,9 +17,11 @@ const OutletPartnerForm = ({ handleClose }) => {
     profileImage: null,
   });
 
+
   const [imagePreview, setImagePreview] = useState(null);
   const dispatch = useDispatch();
   const { loading, error, success } = useSelector((state) => state.partner); // Access loading, error, and success from Redux state
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,6 +52,8 @@ const OutletPartnerForm = ({ handleClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
   
+    
+
     // Check if the image file is present in the formData
     const requiredFields = [
       formData.firstName,
@@ -78,12 +86,20 @@ const OutletPartnerForm = ({ handleClose }) => {
           phoneNumber: '',
           profileImage: null,
         }); // Reset form data
+        setRefresh(!refresh);
       })
+      
       .catch((err) => {
         // Handle error
         console.error('Error adding partner:', err);
       });
   };
+
+  useEffect(() => {
+    // This will run when the component mounts AND when 'refresh' changes.
+    // Make sure you have the correct action to fetch your data (e.g., fetchOutletDetails)
+    dispatch(fetchOutletDetails());  // Or whatever your fetch action is.
+}, [dispatch, refresh]);
   
   return (
     <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 relative">
