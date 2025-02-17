@@ -16,8 +16,9 @@ const Orders = () => {
     direction: "ascending",
   });
 
+  
   const navigate = useNavigate();
-
+  
   // Fetch orders from API
   useEffect(() => {
     const fetchOrders = async () => {
@@ -25,8 +26,9 @@ const Orders = () => {
         const response = await axios.get(
           "https://b2c-49u4.onrender.com/api/v1/order/order"
         );
-        const fetchedOrders = response.data.orders || [];
-        setOrders(fetchedOrders);
+        const fetchedOrderDetails = response.data.orders || [];
+        setOrders(fetchedOrderDetails);
+        console.log(fetchedOrderDetails);
         setLoading(false);
       } catch (error) {
         setError("Failed to load orders. Please try again later.");
@@ -36,6 +38,7 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
+  
   // Sorting function
   const sortedOrders = [...orders].sort((a, b) => {
     if (sortConfig.direction === "ascending") {
@@ -61,6 +64,7 @@ const Orders = () => {
       toast.success("Order has been successfully deleted")
       setSuccessMessage("Order has been successfully deleted");
       setTimeout(() => setSuccessMessage(""), 3000);
+
     } catch (error) {
       console.log(error);
       setSuccessMessage("Order cannot be delete");
@@ -88,7 +92,7 @@ const Orders = () => {
       <h3 className="text-lg font-semibold mb-4">All Orders</h3>
 
       {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-green-500 text-lg font-bold">{`Orders not found`}</p>}
       {successMessage && (
         <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
           {successMessage}
@@ -143,14 +147,14 @@ const Orders = () => {
                   >
                     <td className="p-4 border-b ">{order.id}</td>
                     <td className="p-4 border-b">
-                      {Object.entries(order.products)
-                        .map(([key, value]) => `${key}: ${value}`)
+                      {Object.values(order.products)
+                        .map(({ name, quantity }) => `${name}: ${quantity}`)
                         .join(", ")}
                     </td>
-                    <td className="p-4 border-b">Rs {order.amount}</td>
+                    <td className="p-4 border-b">Rs {Math.round(order.amount)}</td>
                     <td className="p-4 border-b">{order.status}</td>
                     <td className="p-4 border-b border-r">
-                      {new Date(order.createdAt._seconds * 1000).toLocaleDateString()}
+                         {new Date(order.createdAt._seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </td>
                     <td className="p-4 justify-center flex space-x-4">
                       <FaEdit

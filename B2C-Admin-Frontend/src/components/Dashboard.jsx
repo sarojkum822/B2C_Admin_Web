@@ -9,15 +9,20 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../Firebase/firebase';
 import { useNavigate } from 'react-router-dom';
 import Orders from './Orders'
+import axios from 'axios';
+import DashboardStatusCart from './DashboardStatusCart';
+
 const Dashboard = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  
 
   const handleToggleCalendar = () => {
     setShowCalendar(!showCalendar);
   };
 
+  
   const handleDateChange = (dates) => {
     const [start, end] = dates;
     setStartDate(start);
@@ -41,7 +46,7 @@ const Dashboard = () => {
     <div className="flex-grow bg-[#f8f8f8] p-4 lg:p-6 relative m-2">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
         <h1 className="text-2xl font-bold mb-4 lg:mb-0 ml-4">Dashboard</h1>
-        {/* <div className="text-sm relative w-full lg:w-auto">
+        <div className="text-sm relative w-full lg:w-auto">
           <span onClick={handleToggleCalendar} className="cursor-pointer block w-full lg:w-auto bg-white p-2 rounded">
             {`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
           </span>
@@ -58,17 +63,12 @@ const Dashboard = () => {
               />
             </div>
           )}
-        </div> */}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatsCard title="Revenue" value="Rs 7,825" percentage="+22%" color="green" />
-        <StatsCard title="Orders" value="920" percentage="-25%" color="red" />
-        <StatsCard title="Inventory" value="15.5K" percentage="+49%" color="green" />
-        <StatsCard title="Customers Insight" value="28,232" percentage="+1.0%" color="yellow" />
-      </div>
+      <DashboardStatusCart/>
 
-      {/* <OrderDashboard /> */}
+      <OrderDashboard />
       
       {/* <OrdersTable />
        */}

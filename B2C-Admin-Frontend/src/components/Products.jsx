@@ -12,31 +12,31 @@ const ProductsPage = () => {
     discount: "",
     countInStock: "",
   });
-
-  console.log(products);
   
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          "https://b2c-backend-1.onrender.com/api/v1/admin/getallproducts"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-        const data = await response.json();
-        setProducts(data);
-      } catch (err) {
-        setError("Failed to fetch products. Please try again later.");
-      } finally {
-        setLoading(false);
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(
+        "https://b2c-backend-1.onrender.com/api/v1/admin/getallproducts"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
       }
-    };
+      const data = await response.json();
+      setProducts(data);
+    } catch (err) {
+      setError("Failed to fetch products. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
   const handleEdit = (product) => {
+    console.log(product);
+    
     setEditingProduct(product);
     setUpdatedValues({
       rate: product.price,
@@ -53,7 +53,7 @@ const ProductsPage = () => {
   const handleSave = async () => {
     try {
       const { id } = editingProduct;
-      await axios.patch(
+     const res =  await axios.patch(
         `https://b2c-backend-1.onrender.com/api/v1/admin/changeproductprice/${id}`,
         updatedValues
       );
@@ -65,6 +65,7 @@ const ProductsPage = () => {
       );
 
       setEditingProduct(null);
+      fetchProducts();
       toast.success("Product updated successfully!");
     } catch (err) {
       console.error("Error updating product:", err.message);
@@ -158,7 +159,7 @@ const ProductsPage = () => {
                 type="number"
                 name="rate"
                 id="rate"
-                value={updatedValues.price}
+                value={updatedValues.rate}
                 onChange={handleInputChange}
                 className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Enter new rate"

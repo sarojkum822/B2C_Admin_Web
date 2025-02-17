@@ -37,6 +37,13 @@ const DeliveryInsights = () => {
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [phone,setPhone] = useState('');
   const [firstName,setFirstName] = useState('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const [data, setData] = useState([]);
+  const [TotalDeliveries, setTotalDeliveries] = useState("");
+  const [totalDrivers, settotalDrivers] = useState("");
+  const [partnerDetails, setpartnerDetails] = useState([]);
+  const [error,setError] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -56,7 +63,7 @@ const DeliveryInsights = () => {
 
       // Show success message
       toast.success("Delivery partner added successfully! ");
-
+      setRefreshTrigger(prev => prev + 1);
       // Close the form
       setShowAddPartnerForm(false);
 
@@ -108,65 +115,6 @@ const DeliveryInsights = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const data = {
-  //     totalDeliveries: 1835,
-  //     deliveryPartners: 96,
-  //     avgDeliveryTime: "43.5 mins",
-  //   };
-  //   setDeliveryOverview(data);
-  // }, []);
-  //   const fetchDeliveryList = async () => {
-  //     const data = [
-  //       {
-  //         id: "#53200002",
-  //         details: "12 Pc Egg Tray, 6 Pcs Egg Tray",
-  //         price: "Rs 209",
-  //         time: "On-Time",
-  //       },
-  //       {
-  //         id: "#53200005",
-  //         details: "30 Pc Egg Tray",
-  //         price: "Rs 315",
-  //         time: "Late",
-  //       },
-  //       {
-  //         id: "#53200345",
-  //         details: "12 Pc Egg Tray, 30 Pcs Egg Tray",
-  //         price: "Rs 420",
-  //         time: "On-Time",
-  //       },
-  //       {
-  //         id: "#53200016",
-  //         details: "6 Pcs Egg Tray",
-  //         price: "Rs 99",
-  //         time: "On-Time",
-  //       },
-  //       {
-  //         id: "#53200016",
-  //         details: "6 Pcs Egg Tray",
-  //         price: "Rs 99",
-  //         time: "On-Time",
-  //       },
-  //       {
-  //         id: "#53200016",
-  //         details: "6 Pcs Egg Tray",
-  //         price: "Rs 99",
-  //         time: "On-Time",
-  //       },
-  //       {
-  //         id: "#53200016",
-  //         details: "6 Pcs Egg Tray",
-  //         price: "Rs 99",
-  //         time: "On-Time",
-  //       },
-  //     ];
-  //     setDeliveryList(data);
-  //   };
-
-  //   fetchDeliveryOverview();
-  //   fetchDeliveryList();
-  // }, []);
 
   // Filter partners based on selected region
   const filteredPartners =
@@ -195,17 +143,14 @@ const DeliveryInsights = () => {
     }
   };
 
-  const [data, setData] = useState([]);
-  const [TotalDeliveries, setTotalDeliveries] = useState("");
-  const [totalDrivers, settotalDrivers] = useState("");
-  const [partnerDetails, setpartnerDetails] = useState([]);
-  const [error,setError] = useState(true);
+ 
 
  
   
   useEffect(() => {
     fetchDeliveryPartners();
-  }, []);
+  }, [refreshTrigger]);
+
   useEffect(() => {
     console.log("data", data);
   }, [data]);

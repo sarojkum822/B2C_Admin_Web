@@ -16,11 +16,13 @@ const OutletDetails = () => {
 
   if (error) return <div>Error: {error}</div>;
 
-  return (
-    <div className="p-4 sm:p-6 md:p-10 border-2 h-auto w-full">
-      <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Outlet Details</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-5">
+  
+  return (
+    <div className="p-2 sm:p-6 md:p-10 border-2 h-auto w-full">
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Outlet Details</h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
         {[
           { label: 'Revenue', value: `₹ ${summaryData.revenue}`, icon: <FaRupeeSign className="text-orange-500" /> },
           { label: 'Orders', value: summaryData.totalOrders, icon: <FaShoppingCart className="text-orange-500" /> },
@@ -29,7 +31,7 @@ const OutletDetails = () => {
         ].map((item, index) => (
           <div
             key={index}
-            className="bg-white shadow rounded-lg p-4 flex justify-between items-center hover:bg-gray-100"
+            className="bg-white shadow rounded-lg p-4 flex justify-between items-center hover:bg-gray-100 "
           >
             <div>
               <p className="text-sm sm:text-base text-gray-500">{item.label}</p>
