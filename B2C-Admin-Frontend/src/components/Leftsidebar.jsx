@@ -13,6 +13,7 @@ const Leftsidebar = ({ onIconClick, isOpen, toggleSidebar }) => {
     { icon: <FiHome />, label: "Dashboard", path: "/dashboard" },
     { icon: <FiUsers />, label: "Customers", path: "/customer-insights" },
     { icon: <FiMapPin />, label: "Outlets", path: "/outlet" },
+    // { icon: <FiMapPin />, label: "OutletsPartner", path: "/outletPartner" },
     { icon: <FiTruck />, label: "Delivery", path: "/delivery-insights" },
     { icon: <FiList />, label: "Orders", path: "/orders" },
     { icon: <FiGrid />, label: "Products", path: "/products" },
