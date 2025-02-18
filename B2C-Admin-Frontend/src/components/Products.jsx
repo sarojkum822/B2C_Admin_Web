@@ -123,7 +123,11 @@ const ProductsPage = () => {
                   {product.name}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
+<<<<<<< HEAD
                   Rs. {(product.price).toFixed(2)}
+=======
+                  Rs {product.price}
+>>>>>>> fdfefebf50eb015cf7947e520c015f345b11ad1d
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
                   {product.discount}%

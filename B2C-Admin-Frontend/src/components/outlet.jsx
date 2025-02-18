@@ -1,8 +1,9 @@
 import React from 'react'
+// import OutletDetails from './OutletDetails'
 import OutletDetails from './OutletDetails'
-import OutletPartnerDetails from './outletPartnerDetails'
 import AddAnOutletPartner from './AddAnOutletPartner'
 import AddAnOutlet from './AddAnOutlet'
+import OutletPartnerDetails from './outletPartnerDetails'
 
 const outlet = () => {
 

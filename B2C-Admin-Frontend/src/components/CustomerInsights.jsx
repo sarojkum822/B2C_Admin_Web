@@ -151,29 +151,36 @@ const CustomerInsights = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
         {/* Top Customers */}
         <div className="bg-white shadow-lg p-8 rounded-lg">
-          <h2 className="text-lg font-medium mb-4">Top Customers</h2>
-          <div className="overflow-y-auto max-h-48 custom-scrollbar">
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="p-2 text-center">Rank</th>
-                  <th className="p-2 text-center">Name</th>
-                  <th className="p-2 text-center">Orders</th>
-                  <th className="p-2 text-center">Spend</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topCustomers.map((customer) => (
-                  <tr key={customer.rank}>
-                    <td className="p-2 text-center">{customer.rank}</td>
-                    <td className="p-2 text-center">{customer.name}</td>
-                    <td className="p-2 text-center">{customer.orders}</td>
-                    <td className="p-2 text-center">{customer.spend}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <h2 className="text-xl font-semibold mb-6 text-gray-800">Top Customers</h2>
+  <div className="overflow-y-auto max-h-60 custom-scrollbar">
+    <table className="w-full table-auto">
+      <thead>
+        <tr className="bg-gray-200 text-gray-700 text-sm uppercase tracking-wide rounded-md">
+          <th className="py-3 px-4 text-left">Rank</th>
+          <th className="py-3 px-4 text-left">Name</th>
+          <th className="py-3 px-4 text-left">Orders</th>
+          <th className="py-3 px-4 text-left">Spend</th>
+        </tr>
+      </thead>
+      <tbody>
+        {topCustomers.map((customer) => (
+          <tr
+            key={customer.rank}
+            className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
+          >
+            <td className="py-3 px-4 text-gray-700 font-medium">
+              {customer.rank}
+            </td>
+            <td className="py-3 px-4 text-gray-800">{customer.name}</td>
+            <td className="py-3 px-4 text-gray-700">{customer.orders}</td>
+            <td className="py-3 px-4 text-gray-700 font-semibold">
+              ₹{customer.spend.toLocaleString()}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
         </div>
 
         {/* Customer Location */}
@@ -235,15 +242,15 @@ const CustomerInsights = () => {
           <div className="flex flex-col md:flex-row gap-12">
             {/* New vs Returning Customers */}
             <div className="w-full bg-white shadow-lg p-4 rounded-lg flex-1">
-              <h3 className="text-md font-semibold mb-2 text-center">New vs Returning Customers</h3>
-              <div className="flex justify-between items-center flex-col">
+              <h3 className="text-md font-semibold mb-2 text-center border-b-2">New vs Returning Customers</h3>
+              <div className="flex justify-between flex-col">
                 <div className="text-green-600">
                   <p className="text-2xl font-bold">{newVsReturning.new.toFixed(2)}%</p>
-                  <p>New Customers</p>
+                  <p className='border-b-2 m-2'>New Customers</p>
                 </div>
                 <div className="text-blue-600">
                   <p className="text-2xl font-bold">{newVsReturning.returning.toFixed(2)}%</p>
-                  <p>Returning Customers</p>
+                  <p className='border-b-2 m-2'>Returning Customers</p>
                 </div>
               </div>
             </div>
@@ -251,18 +258,18 @@ const CustomerInsights = () => {
             {/* Gender Distribution */}
             <div className="bg-white shadow-lg p-4 rounded-lg flex-1">
               <h3 className="text-md font-semibold mb-2 text-center">Gender Distribution</h3>
-              <div className="flex justify-between items-center flex-col">
+              <div className="flex justify-between flex-col">
                 <div className="text-blue-600">
                   <p className="text-2xl font-bold">{genderDistribution.male.toFixed(2)}%</p>
-                  <p>Male</p>
+                  <p className='border-b-2 m-2'>Male</p>
                 </div>
                 <div className="text-pink-600">
                   <p className="text-2xl font-bold">{genderDistribution.female.toFixed(2)}%</p>
-                  <p>Female</p>
+                  <p className='border-b-2 m-2'>Female</p>
                 </div>
                 <div className="text-gray-600">
                   <p className="text-2xl font-bold">{genderDistribution.others.toFixed(2)}%</p>
-                  <p>Others</p>
+                  <p className='border-b-2 m-2'>Others</p>
                 </div>
               </div>
             </div>
