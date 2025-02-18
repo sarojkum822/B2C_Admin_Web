@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -11,12 +11,12 @@ const Orders = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editData, setEditData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({
     key: "createdAt",
     direction: "ascending",
   });
 
-  
   const navigate = useNavigate();
   
   // Fetch orders from API
@@ -38,9 +38,13 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
+  // Filter orders based on search query
+  const filteredOrders = orders.filter(order => 
+    order.id.toString().toLowerCase().includes(searchQuery.toLowerCase())
+  );
   
   // Sorting function
-  const sortedOrders = [...orders].sort((a, b) => {
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
     if (sortConfig.direction === "ascending") {
       return a[sortConfig.key] < b[sortConfig.key] ? -1 : 1;
     } else {
@@ -56,7 +60,7 @@ const Orders = () => {
     setSortConfig({ key, direction });
   };
 
-  const handleDelete =async (id) => {
+  const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`https://b2c-backend-1.onrender.com/api/v1/admin/order/delete/${id}`)
       console.log(res);
@@ -64,7 +68,6 @@ const Orders = () => {
       toast.success("Order has been successfully deleted")
       setSuccessMessage("Order has been successfully deleted");
       setTimeout(() => setSuccessMessage(""), 3000);
-
     } catch (error) {
       console.log(error);
       setSuccessMessage("Order cannot be delete");
@@ -90,6 +93,22 @@ const Orders = () => {
   return (
     <div className="bg-white p-6 shadow rounded mb-6 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-400">
       <h3 className="text-lg font-semibold mb-4">All Orders</h3>
+
+      {/* Search Bar */}
+      <div className="mb-4 relative">
+        <div className="flex items-center border rounded-lg overflow-hidden shadow-sm">
+          <div className="px-4 py-2 bg-gray-50">
+            <FaSearch className="text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search by Order ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 focus:outline-none"
+          />
+        </div>
+      </div>
 
       {loading && <p>Loading...</p>}
       {error && <p className="text-green-500 text-lg font-bold">{`Orders not found`}</p>}
@@ -142,10 +161,10 @@ const Orders = () => {
                 sortedOrders.map((order, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-100 transition duration-200 border-b  border-collapse cursor-pointer"
+                    className="hover:bg-gray-100 transition duration-200 border-b border-collapse cursor-pointer"
                     onClick={() => navigate(`/order/${order.id}`)}
                   >
-                    <td className="p-4 border-b ">{order.id}</td>
+                    <td className="p-4 border-b">{order.id}</td>
                     <td className="p-4 border-b">
                       {Object.values(order.products)
                         .map(({ name, quantity }) => `${name}: ${quantity}`)
@@ -154,7 +173,7 @@ const Orders = () => {
                     <td className="p-4 border-b">Rs {Math.round(order.amount)}</td>
                     <td className="p-4 border-b">{order.status}</td>
                     <td className="p-4 border-b border-r">
-                         {new Date(order.createdAt._seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                      {new Date(order.createdAt._seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </td>
                     <td className="p-4 justify-center flex space-x-4">
                       <FaEdit

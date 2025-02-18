@@ -123,7 +123,7 @@ const ProductsPage = () => {
                   {product.name}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
-                  ${product.price}
+                  Rs {product.price}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
                   {product.discount}%
