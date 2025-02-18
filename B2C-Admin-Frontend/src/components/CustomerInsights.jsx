@@ -130,7 +130,7 @@ const CustomerInsights = () => {
           </div>
           <div className="text-red-500 flex flex-col items-center">
             <FaUserSlash className="text-4xl" />
-            <p className="text-2xl">{inactiveCustomers}%</p>
+            <p className="text-2xl">{inactiveCustomers.toFixed(2)}%</p>
           </div>
         </div>
 
