@@ -38,6 +38,7 @@ const OutletPartnerDetails = () => {
   };
   // Handle delete
   const handleDelete = async (id) => {
+    
     try {
       await axios.delete(
         `https://b2c-backend-1.onrender.com/api/v1/admin/removeOutletPartner/${id}`

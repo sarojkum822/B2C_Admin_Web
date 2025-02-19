@@ -10,7 +10,7 @@ const EditPartnerModal = ({ partner, onClose, refreshPartners }) => {
     lastName: partner.data.lastName,
     aadharNumber: partner.data.aadharNo || "",
     uniquePassword: partner.data.password || "",
-    profileImage: null,
+    img: null,
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -39,8 +39,8 @@ const EditPartnerModal = ({ partner, onClose, refreshPartners }) => {
       formDataToSend.append("lastName", formData.lastName);
       formDataToSend.append("aadharNumber", formData.aadharNumber);
       formDataToSend.append("uniquePassword", formData.uniquePassword);
-      if (formData.profileImage) {
-        formDataToSend.append("profileImage", formData.profileImage);
+      if (formData.img) {
+        formDataToSend.append("img", formData.img);
       }
       
       await axios.patch(
