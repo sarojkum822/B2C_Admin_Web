@@ -3,11 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addPartner, resetState } from '../redux/OutletPartnerForm'; // Assuming partnerSlice is in the same folder
 import { toast } from 'react-toastify';
 import { fetchOutletDetails } from '../redux/outletDetails';
+import { useNavigate } from 'react-router-dom';
 
 const OutletPartnerForm = ({ handleClose }) => {
 
   const [refresh, setRefresh] = useState(false);
 
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -87,6 +89,7 @@ const OutletPartnerForm = ({ handleClose }) => {
           profileImage: null,
         }); // Reset form data
         setRefresh(!refresh);
+        navigate('/dashboard')
       })
       
       .catch((err) => {
