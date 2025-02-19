@@ -37,14 +37,25 @@ const OutletPartnerDetails = () => {
     }
   };
   // Handle delete
-  const handleDelete = async (id) => {
-    
+  const handleOutletPartner = async (id) => {
     try {
       await axios.delete(
         `https://b2c-backend-1.onrender.com/api/v1/admin/removeOutletPartner/${id}`
       );
       toast.success("Outlet partner deleted successfully");
       setPartners((prev) => prev.filter((partner) => partner.id !== id));
+    } catch (error) {
+      console.error(error);
+      toast.error("Cannot delete outlet partner");
+    }
+  };
+  const handleDeleteOutlet = async (id) => {
+    try {
+      await axios.delete(
+        `https://b2c-backend-1.onrender.com/api/v1/admin/outlet/delete/${id}`
+      );
+      toast.success("Outlet deleted successfully");
+      navigate("/dashboard");
     } catch (error) {
       console.error(error);
       toast.error("Cannot delete outlet partner");
@@ -85,7 +96,7 @@ const OutletPartnerDetails = () => {
                     </button> */}
                     <button
                       className="text-red-500 hover:text-red-600"
-                      onClick={() => handleDelete(outlet.id)}
+                      onClick={() => handleDeleteOutlet(outlet.id)}
                     >
                       <FaTrashAlt />
                     </button>
@@ -133,7 +144,7 @@ const OutletPartnerDetails = () => {
                       <button className="text-blue-500 hover:text-blue-600" onClick={() => setEditPartner(partner)}>
                         <FaEdit />
                       </button>
-                      <button className="text-red-500 hover:text-red-600" onClick={() => handleDelete(partner.id)}>
+                      <button className="text-red-500 hover:text-red-600" onClick={() => handleOutletPartner(partner.id)}>
                         <FaTrashAlt />
                       </button>
                     </td>
