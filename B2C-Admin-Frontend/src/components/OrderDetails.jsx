@@ -136,7 +136,7 @@ const OrderDetails = () => {
             <div className="space-y-2">
               {Object.entries(orderInfo?.address?.fullAddress || {}).map(
                 ([key, value]) => (
-                  <Detail key={key} label={`${key}:`} value={value} />
+                  <Detail key={key} label={`${key} :`} value={value} />
                 )
               )}
             </div>
