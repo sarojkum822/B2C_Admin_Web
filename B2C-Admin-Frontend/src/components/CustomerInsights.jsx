@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { FaUser, FaUserSlash, FaQuestionCircle } from 'react-icons/fa';
 import ClipLoader from 'react-spinners/ClipLoader';

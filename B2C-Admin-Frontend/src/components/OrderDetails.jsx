@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { FaArrowLeft } from 'react-icons/fa';
 
 const OrderDetails = () => {
   const { id } = useParams();
@@ -53,13 +54,21 @@ const OrderDetails = () => {
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link
+              {/* <Link
                 to="/orders"
                 className="text-gray-600 hover:text-orange-500 transition-colors duration-200 flex items-center gap-2"
               >
                 <span className="text-sm">←</span>
                 <span>Back to Orders</span>
+              </Link> */}
+              <Link
+                to="/orders"
+                className="text-gray-600 hover:text-orange-500 transition-colors duration-200 flex items-center gap-2"
+              >
+                <FaArrowLeft className="text-sm" />
+                <span>Back to Orders</span>
               </Link>
+
               <h3 className="text-xl font-semibold text-gray-800">
                 Order Details
               </h3>
@@ -81,7 +90,7 @@ const OrderDetails = () => {
             <Detail label="Order ID" value={orderInfo?.id} />
             <Detail
               label="Amount"
-              value={`Rs ${orderInfo?.amount}`}
+              value={`Rs ${orderInfo?.amount?.toFixed(2)}`}
               className="font-medium text-gray-900"
             />
             <Detail
