@@ -62,7 +62,7 @@ const OrderDetails = () => {
                 <span className="text-sm">←</span>
                 <span>Back to Orders</span>
               </Link> */}
-
+              {/* </Link> */}
               <Link
                 to="/orders"
                 className="text-gray-600 hover:text-orange-500 transition-colors duration-200 flex items-center gap-2"
@@ -70,7 +70,6 @@ const OrderDetails = () => {
                 <FaArrowLeft className="text-sm" />
                 <span>Back to Orders</span>
               </Link>
-
               <h3 className="text-xl font-semibold text-gray-800">
                 Order Details
               </h3>
@@ -89,35 +88,35 @@ const OrderDetails = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           <OrderSection title="Order Information">
-            <Detail label="Order ID" value={orderInfo?.id} />
+            <Detail label="Order ID : " value={orderInfo?.id} />
             <Detail
-              label="Amount"
-              value={`Rs ${orderInfo?.amount?.toFixed(2)}`}
+              label="Amount : "
+              value={`Rs ${orderInfo?.amount?.toFixed(2)}`} 
               className="font-medium text-gray-900"
             />
             <Detail
-              label="Delivery Distance"
+              label="Delivery Distance : "
               value={orderInfo?.deleveryDistance}
             />
             <Detail
-              label="Order Date"
+              label="Order Date : "
               value={new Date(
                 orderInfo?.createdAt?._seconds * 1000
               ).toLocaleString()}
             />
             <Detail
-              label="Last Updated"
+              label="Last Updated : "
               value={new Date(
                 orderInfo?.updatedAt?._seconds * 1000
               ).toLocaleString()}
             />
             <Detail
-              label="Delivery Partner"
+              label="Delivery Partner : "
               value={orderInfo?.deliveryPartnerId ?? "Awaiting acceptance"}
               className={orderInfo?.deliveryPartnerId ? "" : "text-amber-600"}
             />
             <Detail
-              label="Accepted by Partner"
+              label="Accepted by Partner : "
               value={orderInfo?.orderAcceptedByRider ? "Yes" : "No"}
               className={
                 orderInfo?.orderAcceptedByRider
@@ -127,23 +126,23 @@ const OrderDetails = () => {
             />
           </OrderSection>
 
-          <OrderSection title="Customer Information">
-            <Detail label="Name" value={customer?.name} />
-            <Detail label="Phone" value={customer?.phone} />
-            <Detail label="Email" value={customer?.email} />
+          <OrderSection title="Customer Information : ">
+            <Detail label="Name : " value={customer?.name} />
+            <Detail label="Phone : " value={customer?.phone} />
+            <Detail label="Email : " value={customer?.email} />
           </OrderSection>
 
           <OrderSection title="Delivery Address">
             <div className="space-y-2">
               {Object.entries(orderInfo?.address?.fullAddress || {}).map(
                 ([key, value]) => (
-                  <Detail key={key} label={key} value={value} />
+                  <Detail key={key} label={`${key}:`} value={value} />
                 )
               )}
             </div>
           </OrderSection>
 
-          <OrderSection title="Products">
+          <OrderSection title="Products : ">
             <ul className="space-y-3">
               {Object.values(orderInfo?.products || {}).map((product) => (
                 <li
@@ -158,12 +157,12 @@ const OrderDetails = () => {
             </ul>
           </OrderSection>
 
-          <OrderSection title="Outlet Information">
-            <Detail label="Name" value={outlet?.name} />
-            <Detail label="Phone" value={outlet?.phNo} />
+          <OrderSection title="Outlet Information : ">
+            <Detail label="Name : " value={outlet?.name} />
+            <Detail label="Phone : " value={outlet?.phNo} />
             <div className="mt-4 pt-4 border-t border-gray-100">
               <h5 className="text-sm font-medium text-gray-500 mb-2">
-                Address
+                Address : 
               </h5>
               {Object.entries(orderInfo?.address?.fullAddress || {}).map(
                 ([key, value]) => (
