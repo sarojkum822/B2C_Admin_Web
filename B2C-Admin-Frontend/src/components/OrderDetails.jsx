@@ -62,7 +62,7 @@ const OrderDetails = () => {
                 <span className="text-sm">←</span>
                 <span>Back to Orders</span>
               </Link> */}
-              {/* </Link> */}
+
               <Link
                 to="/orders"
                 className="text-gray-600 hover:text-orange-500 transition-colors duration-200 flex items-center gap-2"
@@ -70,6 +70,7 @@ const OrderDetails = () => {
                 <FaArrowLeft className="text-sm" />
                 <span>Back to Orders</span>
               </Link>
+
               <h3 className="text-xl font-semibold text-gray-800">
                 Order Details
               </h3>
