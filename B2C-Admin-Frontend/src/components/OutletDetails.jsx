@@ -8,12 +8,13 @@ const OutletDetails = () => {
 
   // Accessing the state from Redux store
   const { summaryData, outletData, loading, error } = useSelector((state) => state.outletDetails);
-
+  console.log(summaryData);
+  
   // Dispatch the action to fetch outlet details on component mount
   useEffect(() => {
     dispatch(fetchOutletDetails());
   }, [dispatch]);
-
+  
   if (error) return <div>Error: {error}</div>;
 
 

@@ -176,13 +176,13 @@ const Orders = () => {
                       {new Date(order.createdAt._seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </td>
                     <td className="p-4 justify-center flex space-x-4">
-                      <FaEdit
+                      {/* <FaEdit
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEdit(index);
                         }}
                         className="text-blue-500 cursor-pointer"
-                      />
+                      /> */}
                       <FaTrash
                         onClick={(e) => {
                           e.stopPropagation();

@@ -39,7 +39,7 @@ const ProductsPage = () => {
     
     setEditingProduct(product);
     setUpdatedValues({
-      rate: product.price,
+      rate: (product.price).toFixed(2),
       discount: product.discount,
       countInStock: product.countInStock,
     });
@@ -123,7 +123,7 @@ const ProductsPage = () => {
                   {product.name}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
-                  Rs {product.price}
+                  Rs. {(product.price).toFixed(2)}
                 </td>
                 <td className="px-4 sm:px-6 py-4 text-gray-700">
                   {product.discount}%
