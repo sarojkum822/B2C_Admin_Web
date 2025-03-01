@@ -174,8 +174,9 @@ const CustomerInsights = () => {
             <td className="py-3 px-4 text-gray-800">{customer.name}</td>
             <td className="py-3 px-4 text-gray-700">{customer.orders}</td>
             <td className="py-3 px-4 text-gray-700 font-semibold">
-              ₹{customer.spend.toLocaleString()}
+             ₹{customer.spend.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </td>
+
           </tr>
         ))}
       </tbody>
