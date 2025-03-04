@@ -133,14 +133,22 @@ const OrderDetails = () => {
           </OrderSection>
 
           <OrderSection title="Delivery Address">
+
             <div className="space-y-2">
-              {Object.entries(orderInfo?.address?.fullAddress || {}).map(
-                ([key, value]) => (
-                  <Detail key={key} label={`${key} :`} value={value} />
-                )
-              )}
+              {Object.entries(orderInfo?.address?.fullAddress || {})
+                .filter(([key]) => key !== "country") // Remove "country"
+                .map(([key, value]) => {
+                  const formattedKey =
+                    key === "zipCode"
+                      ? "Pin Code"
+                      : key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
+
+                  return <Detail key={key} label={`${formattedKey} :`} value={value} />;
+                })}
             </div>
           </OrderSection>
+
+
 
           <OrderSection title="Products : ">
             <ul className="space-y-3">
@@ -166,7 +174,7 @@ const OrderDetails = () => {
               </h5>
               {Object.entries(orderInfo?.address?.fullAddress || {}).map(
                 ([key, value]) => (
-                  <Detail key={key} label={key} value={value} />
+                  <Detail key={key} label={`${key} :`} value={value} />
                 )
               )}
             </div>
