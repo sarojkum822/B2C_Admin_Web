@@ -80,7 +80,7 @@ const OrderDashboard = () => {
             const itemData = rawData[index];
 
             return [
-              `💰 Total Earnings: $${Math.round(itemData?.totalEarnings || 0)}`, // Rounded earnings
+              `💰 Total Earnings: Rs: ${Math.round(itemData?.totalEarnings || 0)}`, // Rounded earnings
               `📦 Total Orders: ${itemData?.totalOrders || 0}`,
               `🏬 Total Outlets: ${itemData?.totalOutlets || 0}`,
               `👥 Total Customers: ${itemData?.totalCustomers || 0}`,
