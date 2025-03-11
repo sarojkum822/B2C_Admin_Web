@@ -1,54 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDeliveryPartnerDetails } from '../redux/deliveryPartnerDetailsSlice';
 import delivery from "../assets/Images/delivery.png";
 import clock from "../assets/Images/Clock.png";
 import partner from "../assets/Images/Partners.png";
 
 const DeliveryPartnerDetails = () => {
-  const { partnerId } = useParams();
-  const navigate = useNavigate();
-  const [partnerData, setPartnerData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [modalImage, setModalImage] = useState(null);
+    const { partnerId } = useParams();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { partnerData, loading, error } = useSelector((state) => state.deliveryPartnerDetails);
+    const [modalImage, setModalImage] = useState(null);
 
-  const handleBackClick = () => {
-    navigate('/delivery-insights');
-  };
-
-  useEffect(() => {
-    const fetchPartnerDetails = async () => {
-      try {
-        const response = await fetch(`https://b2c-backend-1.onrender.com/api/v1/admin/deliverypartner/${partnerId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch partner details');
-        }
-        
-        const data = await response.json();
-        setPartnerData(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
+    const handleBackClick = () => {
+        navigate('/delivery-insights');
     };
 
-    fetchPartnerDetails();
-  }, [partnerId]);
+    useEffect(() => {
+        dispatch(fetchDeliveryPartnerDetails(partnerId));
+    }, [dispatch, partnerId]);
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    }
 
-  if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
-  }
+    if (error) {
+        return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+    }
 
-  if (!partnerData) {
-    return <div className="flex justify-center items-center h-screen">No partner data found</div>;
-  }
+    if (!partnerData) {
+        return <div className="flex justify-center items-center h-screen">No partner data found</div>;
+    }
 
+    
   return (
     <div className="container mx-auto p-6">
       {/* Back Button */}

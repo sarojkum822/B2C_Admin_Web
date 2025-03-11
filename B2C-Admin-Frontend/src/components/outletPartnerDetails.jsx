@@ -74,6 +74,7 @@ const OutletPartnerDetails = () => {
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
           All Outlets
         </h2>
+        
         <div className="overflow-x-auto overflow-y-auto h-72">
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100 border-2 border-orange-100 border-b-gray-300">
