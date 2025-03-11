@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOutletDetails } from '../redux/outletDetails'; // Adjust the import path if needed
 import { FaRupeeSign, FaShoppingCart, FaStore, FaUsers } from 'react-icons/fa';
+import AddAnOutletPartner from './AddAnOutletPartner';
 
 const OutletDetails = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ const OutletDetails = () => {
   return (
     <div className="p-2 sm:p-6 md:p-10 border-2 h-auto w-full">
       <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Outlet Details</h1>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
         {[
