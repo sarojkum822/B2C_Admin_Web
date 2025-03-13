@@ -19,7 +19,7 @@ export const fetchDeliveryPartnerDetails = createAsyncThunk(
         }
 
         try {
-            const response = await axios.get(`https://b2c-backend-1.onrender.com/api/v1/admin/deliverypartner/${partnerId}`);
+            const response = await axios.get(`https://b2c-backend13.onrender.com/api/v1/admin/deliverypartner/${partnerId}`);
             return response.data;
         } catch (err) {
             return rejectWithValue(err.message);

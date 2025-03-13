@@ -57,7 +57,7 @@ const DeliveryInsights = () => {
     e.preventDefault(); // Prevent default form submission behavior
     try {
       const response = await axios.post(
-        "https://b2c-backend-1.onrender.com/api/v1/admin/makedeliverypartner",
+        "https://b2c-backend13.onrender.com/api/v1/admin/makedeliverypartner",
         {phone,firstName}
       );
 
@@ -81,7 +81,7 @@ const DeliveryInsights = () => {
     setError(null); // Reset any previous error
     try {
       const response = await fetch(
-        "https://b2c-backend-1.onrender.com/api/v1/admin/deliveryInsights"
+        "https://b2c-backend13.onrender.com/api/v1/admin/deliveryInsights"
       );
   
       if (!response.ok) {
@@ -132,7 +132,7 @@ const DeliveryInsights = () => {
   const handleApprovePartner = async (id) => {
     try {
       const response = await axios.patch(
-        `https://b2c-backend-1.onrender.com/api/v1/admin/approveDelivery/${id}`
+        `https://b2c-backend13.onrender.com/api/v1/admin/approveDelivery/${id}`
       );
         toast.success("Delivery partner approved successfully!");
         console.log("Success:", response.data);
@@ -157,7 +157,7 @@ const DeliveryInsights = () => {
 
   const handleDeleteDeleveryPartner=async(id)=>{
     try {
-      const res = await axios.delete(`https://b2c-backend-1.onrender.com/api/v1/admin/deliverypartner/delete/${id}`)
+      const res = await axios.delete(`https://b2c-backend13.onrender.com/api/v1/admin/deliverypartner/delete/${id}`)
       console.log(res);
       navigate('/delivery-insights')
       toast.success("delivery Partner deleted")

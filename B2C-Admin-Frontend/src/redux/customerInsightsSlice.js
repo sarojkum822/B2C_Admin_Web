@@ -34,7 +34,7 @@ export const fetchCustomerInsights = createAsyncThunk(
       }
 
       try {
-          const response = await axios.get('https://b2c-backend-1.onrender.com/api/v1/admin/customerInsights');
+          const response = await axios.get('https://b2c-backend13.onrender.com/api/v1/admin/customerInsights');
           const responseData = response?.data || {};
 
           const aggregation = responseData?.aggregation || {};

@@ -189,34 +189,6 @@ const AddAnOutletForm = ({ handleClose }) => {
     }));
   }, []);
 
-  // const getGeolocation = () => {
-  //   if (navigator.geolocation) {
-  //     setIsLoading(true);
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) => {
-  //         setFormData((prev) => ({
-  //           ...prev,
-  //           location: {
-  //             ...prev.location,
-  //             coordinates: {
-  //               lat: position.coords.latitude,
-  //               long: position.coords.longitude,
-  //             },
-  //           },
-  //         }));
-  //         setlat(position.coords.latitude);
-  //         setlong(position.coords.longitude);
-  //         setIsLoading(false);
-  //       },
-  //       (error) => {
-  //         console.error("Error getting location:", error);
-  //         setIsLoading(false);
-  //       }
-  //     );
-  //   } else {
-  //     alert("Geolocation is not supported by this browser.");
-  //   }
-  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -333,7 +305,7 @@ const AddAnOutletForm = ({ handleClose }) => {
   const fetchOutletPartner = async () => {
     try {
       const response = await fetch(
-        "https://b2c-backend-1.onrender.com/api/v1/admin/getoutletpartners"
+        "https://b2c-backend13.onrender.com/api/v1/admin/getoutletpartners"
       );
       if (response.ok) {
         const data = await response.json();
@@ -350,7 +322,7 @@ const AddAnOutletForm = ({ handleClose }) => {
   const fetchDeliveryPartner = async () => {
     try {
       const response = await fetch(
-        "https://b2c-backend-1.onrender.com/api/v1/admin/deliveryInsights"
+        "https://b2c-backend13.onrender.com/api/v1/admin/deliveryInsights"
       );
       if (response.ok) {
         const data = await response.json();
@@ -421,12 +393,22 @@ const AddAnOutletForm = ({ handleClose }) => {
         }
       );
 
-      if (!response.ok)
+      if (!response.ok) {
+        // Extract error data from the response
+        let errorData = null;
+        try {
+          errorData = await response.json(); // Attempt to parse JSON
+        } catch (jsonError) {
+          // If parsing JSON fails, errorData remains null
+          console.error("Failed to parse error JSON:", jsonError);
+        }
+  
         throw new Error(
-          `Failed to add outlet" ${response.status} - ${
+          `Failed to add outlet: ${response.status} - ${
             errorData?.message || response.statusText
           }`
         );
+      }
 
       const data = await response.json();
       console.log("Response data:", data);

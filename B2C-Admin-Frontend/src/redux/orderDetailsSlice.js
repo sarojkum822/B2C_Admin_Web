@@ -19,7 +19,7 @@ export const fetchOrderDetails = createAsyncThunk(
 
       try {
           const response = await fetch(
-              `https://b2c-backend-1.onrender.com/api/v1/order/orderdetails/${id}`
+              `https://b2c-backend13.onrender.com/api/v1/order/orderdetails/${id}`
           );
           if (!response.ok) {
               throw new Error('Failed to fetch order details');

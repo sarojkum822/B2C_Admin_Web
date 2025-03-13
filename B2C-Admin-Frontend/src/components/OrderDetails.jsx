@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { FaArrowLeft, FaCopy, FaCheck } from "react-icons/fa";
+import { FaArrowLeft, FaCopy, FaCheck, FaMapMarkerAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrderDetails } from '../redux/orderDetailsSlice';
 
@@ -20,7 +20,7 @@ const OrderDetails = () => {
       
       // Reset the copy icon after 2 seconds
       setTimeout(() => {
-        setCopiedItems({ ...copiedItems, [key]: false });
+        setCopiedItems(prevState => ({ ...prevState, [key]: false }));
       }, 2000);
     });
   };
@@ -42,6 +42,12 @@ const OrderDetails = () => {
     );
 
   const { order: orderInfo, customer, outlet } = order || {};
+  const customerCoordinates = orderInfo?.address?.coordinates;
+  
+  // Generate Google Maps URL using the coordinates
+  const getGoogleMapsUrl = (lat, long) => {
+    return `https://www.google.com/maps?q=${lat},${long}`;
+  };
 
   const productDisplayNameMap = {
     E6: "6pc tray",
@@ -119,7 +125,7 @@ const OrderDetails = () => {
   };
 
   return (
-    <div className="h-screen bg-gray-100 py-2 text-lg ">
+    <div className="h-screen bg-gray-100 py-2 text-lg overflow-auto">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="border-b border-gray-200 mb-8 pb-4">
@@ -140,6 +146,8 @@ const OrderDetails = () => {
                 className={`px-4 py-2 animate-pulse duration-100 rounded-full text-lg font-medium ${
                   orderInfo?.status === "Delivered"
                     ? "bg-green-100 text-green-800"
+                    : orderInfo?.status === "canceled"
+                    ? "bg-red-100 text-red-800"
                     : "bg-yellow-100 text-yellow-800"
                 }`}
               >
@@ -148,7 +156,66 @@ const OrderDetails = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Customer Location Map Card */}
+            <OrderSection title="Customer Location">
+              {customerCoordinates && (
+                <>
+                  <div className="relative w-full h-64 mb-4 rounded-lg overflow-hidden border border-gray-300">
+                    <iframe
+                      title="Customer Location"
+                      className="absolute top-0 left-0 w-full h-full"
+                      frameBorder="0"
+                      src={`https://maps.google.com/maps?q=${customerCoordinates.lat},${customerCoordinates.long}&z=15&output=embed`}
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                  <div className="flex flex-col space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-500">Coordinates</span>
+                      <div className="flex items-center">
+                        <span className="text-sm text-gray-700 mr-2">
+                          {customerCoordinates.lat}, {customerCoordinates.long}
+                        </span>
+                        <button
+                          onClick={() => handleCopy(`${customerCoordinates.lat}, ${customerCoordinates.long}`, "coordinates")}
+                          className="text-gray-400 hover:text-blue-500 focus:outline-none transition-colors duration-200"
+                          title="Copy Coordinates"
+                        >
+                          {copiedItems["coordinates"] ? (
+                            <FaCheck className="text-green-500" />
+                          ) : (
+                            <FaCopy />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <CopyableDetail
+                      label="Full Address"
+                      value={`${orderInfo?.address?.fullAddress?.flatNo}, ${orderInfo?.address?.fullAddress?.area}, ${orderInfo?.address?.fullAddress?.city}, ${orderInfo?.address?.fullAddress?.state} - ${orderInfo?.address?.fullAddress?.zipCode}`}
+                      onCopy={() => handleCopy(`${orderInfo?.address?.fullAddress?.flatNo}, ${orderInfo?.address?.fullAddress?.area}, ${orderInfo?.address?.fullAddress?.city}, ${orderInfo?.address?.fullAddress?.state} - ${orderInfo?.address?.fullAddress?.zipCode}`, "customerAddress")}
+                      isCopied={copiedItems["customerAddress"]}
+                      copyable
+                    />
+                    <a
+                      href={getGoogleMapsUrl(customerCoordinates.lat, customerCoordinates.long)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-full bg-orange-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md mt-2 transition-colors duration-200"
+                    >
+                      <FaMapMarkerAlt className="mr-2" />
+                      Open in Google Maps
+                    </a>
+                  </div>
+                </>
+              )}
+              {!customerCoordinates && (
+                <div className="h-32 flex items-center justify-center text-gray-500">
+                  No location coordinates available
+                </div>
+              )}
+            </OrderSection>
+
             <OrderSection title="Order Information">
               <CopyableDetail 
                 label="Order ID" 
@@ -193,8 +260,8 @@ const OrderDetails = () => {
                 <CopyableDetail 
                   label="Full Address" 
                   value={`${orderInfo?.address?.fullAddress?.flatNo}, ${orderInfo?.address?.fullAddress?.area}, ${orderInfo?.address?.fullAddress?.city}, ${orderInfo?.address?.fullAddress?.state} - ${orderInfo?.address?.fullAddress?.zipCode}`} 
-                  onCopy={() => handleCopy(`${orderInfo?.address?.fullAddress?.flatNo}, ${orderInfo?.address?.fullAddress?.area}, ${orderInfo?.address?.fullAddress?.city}, ${orderInfo?.address?.fullAddress?.state} - ${orderInfo?.address?.fullAddress?.zipCode}`, "customerAddress")}
-                  isCopied={copiedItems["customerAddress"]}
+                  onCopy={() => handleCopy(`${orderInfo?.address?.fullAddress?.flatNo}, ${orderInfo?.address?.fullAddress?.area}, ${orderInfo?.address?.fullAddress?.city}, ${orderInfo?.address?.fullAddress?.state} - ${orderInfo?.address?.fullAddress?.zipCode}`, "customerAddressFull")}
+                  isCopied={copiedItems["customerAddressFull"]}
                   copyable 
                 />
               </div>
