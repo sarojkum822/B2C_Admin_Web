@@ -30,7 +30,7 @@ const DashboardStatusCard = () => {
                 
                 if (shouldFetch || isRefreshing) {
                     // Fetch fresh data
-                    const res = await axios.get("https://b2c-backend13.onrender.com/api/v1/admin/dashboard/inforamtion");
+                    const res = await axios.get("https://b2c-backend-eik4.onrender.com/api/v1/admin/dashboard/inforamtion");
                     const dashboardData = res.data.data;
                     
                     // Store in localStorage

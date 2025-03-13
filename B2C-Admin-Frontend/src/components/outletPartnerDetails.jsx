@@ -29,7 +29,7 @@ const OutletPartnerDetails = () => {
   const fetchPartners = async () => {
     try {
       const response = await axios.get(
-        "https://b2c-backend13.onrender.com/api/v1/admin/getoutletpartners"
+        "https://b2c-backend-eik4.onrender.com/api/v1/admin/getoutletpartners"
       );
       setPartners(response.data);
     } catch (error) {
@@ -40,7 +40,7 @@ const OutletPartnerDetails = () => {
   const handleOutletPartner = async (id) => {
     try {
       await axios.delete(
-        `https://b2c-backend13.onrender.com/api/v1/admin/removeOutletPartner/${id}`
+        `https://b2c-backend-eik4.onrender.com/api/v1/admin/removeOutletPartner/${id}`
       );
       toast.success("Outlet partner deleted successfully");
       setPartners((prev) => prev.filter((partner) => partner.id !== id));
@@ -52,7 +52,7 @@ const OutletPartnerDetails = () => {
   const handleDeleteOutlet = async (id) => {
     try {
       await axios.delete(
-        `https://b2c-backend13.onrender.com/api/v1/admin/outlet/delete/${id}`
+        `https://b2c-backend-eik4.onrender.com/api/v1/admin/outlet/delete/${id}`
       );
       toast.success("Outlet deleted successfully");
       navigate("/dashboard");

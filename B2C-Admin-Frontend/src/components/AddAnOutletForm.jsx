@@ -305,7 +305,7 @@ const AddAnOutletForm = ({ handleClose }) => {
   const fetchOutletPartner = async () => {
     try {
       const response = await fetch(
-        "https://b2c-backend13.onrender.com/api/v1/admin/getoutletpartners"
+        "https://b2c-backend-eik4.onrender.com/api/v1/admin/getoutletpartners"
       );
       if (response.ok) {
         const data = await response.json();
@@ -322,7 +322,7 @@ const AddAnOutletForm = ({ handleClose }) => {
   const fetchDeliveryPartner = async () => {
     try {
       const response = await fetch(
-        "https://b2c-backend13.onrender.com/api/v1/admin/deliveryInsights"
+        "https://b2c-backend-eik4.onrender.com/api/v1/admin/deliveryInsights"
       );
       if (response.ok) {
         const data = await response.json();

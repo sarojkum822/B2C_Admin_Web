@@ -22,7 +22,7 @@ const ProductsPage = () => {
   const handleUpdateShipping = async () => {
     try {
       await axios.post(
-        "https://b2c-backend13.onrender.com/api/v1/order/shipping",
+        "https://b2c-backend-eik4.onrender.com/api/v1/order/shipping",
         {
           charge: Number(shippingCharge),
         }
@@ -44,7 +44,7 @@ const ProductsPage = () => {
   const fetchShippingCharge = async () => {
     try {
       const response = await axios.get(
-        "https://b2c-backend13.onrender.com/api/v1/order/shipping"
+        "https://b2c-backend-eik4.onrender.com/api/v1/order/shipping"
       );
       setShipping(response.data.charge);
     } catch (error) {
@@ -59,7 +59,7 @@ const ProductsPage = () => {
   const fetchProducts = async () => {
     try {
       const response = await fetch(
-        "https://b2c-backend13.onrender.com/api/v1/admin/getallproducts"
+        "https://b2c-backend-eik4.onrender.com/api/v1/admin/getallproducts"
       );
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -95,7 +95,7 @@ const ProductsPage = () => {
     try {
       const { id } = editingProduct;
       await axios.patch(
-        `https://b2c-backend13.onrender.com/api/v1/admin/changeproductprice/${id}`,
+        `https://b2c-backend-eik4.onrender.com/api/v1/admin/changeproductprice/${id}`,
         updatedValues
       );
 

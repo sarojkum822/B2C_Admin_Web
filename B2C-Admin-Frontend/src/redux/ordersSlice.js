@@ -38,7 +38,7 @@ export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (_, { ge
 
 export const deleteOrder = createAsyncThunk('orders/deleteOrder', async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.delete(`https://b2c-backend13.onrender.com/api/v1/admin/order/delete/${id}`);
+    const response = await axios.delete(`https://b2c-backend-eik4.onrender.com/api/v1/admin/order/delete/${id}`);
     console.log(response);
     return id; // Return the deleted order's ID
   } catch (error) {

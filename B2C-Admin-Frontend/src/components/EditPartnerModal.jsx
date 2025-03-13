@@ -44,7 +44,7 @@ const EditPartnerModal = ({ partner, onClose, refreshPartners }) => {
       }
       
       await axios.patch(
-        `https://b2c-backend13.onrender.com/api/v1/admin/updateOutletPartner/${partner.id}`,
+        `https://b2c-backend-eik4.onrender.com/api/v1/admin/updateOutletPartner/${partner.id}`,
         formDataToSend, { headers: { "Content-Type": "multipart/form-data" } }
       );
       
