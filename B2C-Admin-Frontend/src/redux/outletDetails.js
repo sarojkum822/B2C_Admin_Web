@@ -5,11 +5,19 @@ import axios from 'axios';
 export const FETCH_OUTLET_DETAILS_REQUEST = 'FETCH_OUTLET_DETAILS_REQUEST';
 export const FETCH_OUTLET_DETAILS_SUCCESS = 'FETCH_OUTLET_DETAILS_SUCCESS';
 export const FETCH_OUTLET_DETAILS_FAILURE = 'FETCH_OUTLET_DETAILS_FAILURE';
+export const CLEAR_OUTLET_CACHE = 'CLEAR_OUTLET_CACHE';
+
+// Action to clear the cache
+export const clearOutletCache = () => ({
+  type: CLEAR_OUTLET_CACHE
+});
 
 // Action to initiate API request
-export const fetchOutletDetails = () => async (dispatch, getState) => {
+export const fetchOutletDetails = (forceRefresh = false) => async (dispatch, getState) => {
     const state = getState();
-    if (state.outletDetails.summaryData && state.outletDetails.outletData.length > 0) {
+    
+    // Only use cache if forceRefresh is false and we have data
+    if (!forceRefresh && state.outletDetails.summaryData && state.outletDetails.outletData.length > 0) {
         // Data is already cached, dispatch success with cached data
         dispatch({
             type: FETCH_OUTLET_DETAILS_SUCCESS,
@@ -77,6 +85,11 @@ const outletDetailsReducer = (state = initialState, action) => {
             };
         case FETCH_OUTLET_DETAILS_FAILURE:
             return { ...state, loading: false, error: action.payload };
+        case CLEAR_OUTLET_CACHE:
+            return {
+                ...state,
+                outletData: [],
+            };
         default:
             return state;
     }

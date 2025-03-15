@@ -1,31 +1,36 @@
+
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchOutletDetails } from "../redux/outletDetails";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import EditPartnerModal from './EditPartnerModal'
+import EditPartnerModal from "./EditPartnerModal";
+import EditOutletModal from "./EditOutletModal";
+import { Link } from "react-router-dom"; // Import Link
+
 const OutletPartnerDetails = () => {
-  const dispatch = useDispatch();
-  const { outletData } = useSelector((state) => state.outletDetails);
   const navigate = useNavigate();
 
   const [partners, setPartners] = useState([]);
   const [editPartner, setEditPartner] = useState(null);
+  const [editOutlet, setEditOutlet] = useState(null);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     phone: "",
     img: null, // Image upload
   });
+  // const [outletData, setOutletData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch outlet partners on mount
   useEffect(() => {
-    
+    // fetchOutlets();
     fetchPartners();
   }, []);
 
+ 
   const fetchPartners = async () => {
     try {
       const response = await axios.get(
@@ -36,7 +41,9 @@ const OutletPartnerDetails = () => {
       console.log(error);
     }
   };
-  // Handle delete
+
+ 
+  // Handle delete outlet partner
   const handleOutletPartner = async (id) => {
     try {
       await axios.delete(
@@ -49,66 +56,29 @@ const OutletPartnerDetails = () => {
       toast.error("Cannot delete outlet partner");
     }
   };
-  const handleDeleteOutlet = async (id) => {
-    try {
-      await axios.delete(
-        `https://b2c-backend-eik4.onrender.com/api/v1/admin/outlet/delete/${id}`
-      );
-      toast.success("Outlet deleted successfully");
-      navigate("/dashboard");
-    } catch (error) {
-      console.error(error);
-      toast.error("Cannot delete outlet partner");
-    }
-  };
 
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  // Refresh outlets from Redux
+  const refreshOutlets = () => {
+    fetchOutlets(true);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <>
-      {/* Outlets Table */}
-      <div className="shadow-md rounded-lg p-4 m-4 ml-4 sm:ml-10 mt-4 border-2">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
-          All Outlets
-        </h2>
-        
-        <div className="overflow-x-auto overflow-y-auto h-72">
-          <table className="min-w-full table-auto">
-            <thead className="bg-gray-100 border-2 border-orange-100 border-b-gray-300">
-              <tr>
-                <th className="px-4 py-2 text-left text-gray-600">Outlet Name</th>
-                <th className="px-4 py-2 text-left text-gray-600">Contact</th>
-                <th className="px-4 py-2 text-left text-gray-600">Area</th>
-                <th className="px-4 py-2 text-left text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {outletData.map((outlet) => (
-                <tr key={outlet.id} className="border-t hover:bg-gray-100">
-                  <td className="px-4 py-2">{outlet.name}</td>
-                  <td className="px-4 py-2">{outlet.contact}</td>
-                  <td className="px-4 py-2">{outlet.area}</td>
-                  <td className="px-4 py-2 flex space-x-4">
-                    {/* <button className="text-blue-500 hover:text-blue-600">
-                      <FaEdit />
-                    </button> */}
-                    <button
-                      className="text-red-500 hover:text-red-600"
-                      onClick={() => handleDeleteOutlet(outlet.id)}
-                    >
-                      <FaTrashAlt />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+   
       {/* Outlet Partners Table */}
       <div className="shadow-md rounded-lg p-4 m-4 ml-4 sm:ml-10 mt-4 border-2">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
@@ -157,14 +127,16 @@ const OutletPartnerDetails = () => {
         )}
       </div>
 
-      {/* Edit Form */}
-      {editPartner && (
-        <EditPartnerModal 
-          partner={editPartner} 
-          onClose={() => setEditPartner(null)} 
+     {/* Edit Partner Modal */}
+     {editPartner && (
+        <EditPartnerModal
+          partner={editPartner}
+          onClose={() => setEditPartner(null)}
           refreshPartners={fetchPartners}
         />
       )}
+
+     
     </>
   );
 };

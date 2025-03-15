@@ -5,6 +5,9 @@ import { FaRupeeSign, FaShoppingCart, FaStore, FaUsers } from 'react-icons/fa';
 import AddAnOutletPartner from './AddAnOutletPartner';
 
 const OutletDetails = () => {
+
+  
+
   const dispatch = useDispatch();
 
   // Accessing the state from Redux store

@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.6",
     "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.7.9",
     "firebase": "^11.1.0",

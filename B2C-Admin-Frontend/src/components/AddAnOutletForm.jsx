@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
-
+import { useAddOutletMutation, useGetOutletPartnersQuery, useGetDeliveryInsightsQuery } from "../redux/apiSlice";
 import "leaflet/dist/leaflet.css";
 
-// Leaflet icon setup...
+// Leaflet icon setup remains the same
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -26,23 +26,27 @@ const MapUpdater = ({ center }) => {
 };
 
 const AddAnOutletForm = ({ handleClose }) => {
-  const [outletPartner, setOutletPartner] = useState([]);
+  // Use RTK Query hooks
+  const { data: outletPartners = [], isLoading: isLoadingPartners } = useGetOutletPartnersQuery();
+  const { data: deliveryPartnerData, isLoading: isLoadingDelivery } = useGetDeliveryInsightsQuery();
+  const [addOutlet, { isLoading: isSubmitting }] = useAddOutletMutation();
+
   const [searchQuery, setSearchQuery] = useState("");
-
   const [geocodeTimer, setGeocodeTimer] = useState(null);
-
   const defaultCenter = [28.6139, 77.209];
   const [mapCenter, setMapCenter] = useState(defaultCenter);
-  const [markerPosition, setMarkerPosition] = useState(
-    mapCenter || defaultCenter
-  ); // State for marker position
+  const [markerPosition, setMarkerPosition] = useState(defaultCenter);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [lat, setlat] = useState("");
+  const [long, setlong] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [formData, setFormData] = useState({
-    outletNumber: "",
+    outletNumber: "(auto-generated)",
     area: "",
     outletPartner: "",
     phoneNumber: "",
-    deliveryPartners: [],
+    deliveryPartners: [], // Fixed: Initialize as empty array
     image: null,
     location: {
       fullAddress: {
@@ -60,10 +64,18 @@ const AddAnOutletForm = ({ handleClose }) => {
     },
   });
 
+  // Get drivers array safely from the API response
+  const drivers = deliveryPartnerData?.drivers || [];
+  
+  // Filter drivers based on search query
+  const filteredDeliveryPartners = drivers.filter((driver) =>
+    driver.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleMarkerDragEnd = (e) => {
     const { lat, lng } = e.target.getLatLng();
-    setMarkerPosition([lat, lng]); // Update marker position
-    setMapCenter([lat, lng]); // Update map center if needed
+    setMarkerPosition([lat, lng]);
+    setMapCenter([lat, lng]);
     setFormData((prev) => ({
       ...prev,
       location: {
@@ -95,11 +107,9 @@ const AddAnOutletForm = ({ handleClose }) => {
     setlong(lng);
   };
 
+  // Update marker position when coordinates change
   useEffect(() => {
-    if (
-      formData.location.coordinates.lat &&
-      formData.location.coordinates.long
-    ) {
+    if (formData.location.coordinates.lat && formData.location.coordinates.long) {
       setMarkerPosition([
         formData.location.coordinates.lat,
         formData.location.coordinates.long,
@@ -111,13 +121,13 @@ const AddAnOutletForm = ({ handleClose }) => {
     }
   }, [formData.location.coordinates]);
 
+  // Geocode the address when it changes
   useEffect(() => {
     if (geocodeTimer) {
       clearTimeout(geocodeTimer);
     }
 
     const { fullAddress } = formData.location;
-    // Check if we have enough address information to perform geocoding
     if (fullAddress.area && fullAddress.city) {
       const timer = setTimeout(async () => {
         try {
@@ -159,36 +169,13 @@ const AddAnOutletForm = ({ handleClose }) => {
         } finally {
           setIsLoading(false);
         }
-      }, 1000); // Wait 1 second after last input before fetching
+      }, 1000);
 
       setGeocodeTimer(timer);
     }
   }, [formData.location.fullAddress]);
 
-  // Initialize deliveryPartner state with proper structure
-  const [deliveryPartner, setDeliveryPartner] = useState({
-    totalDeliveries: 0,
-    totalDrivers: 0,
-    drivers: [],
-  });
-
-  const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [lat, setlat] = useState("");
-  const [long, setlong] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const filteredDeliveryPartners = deliveryPartner.drivers?.filter((driver) =>
-    driver.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      outletNumber: "(auto-generated)",
-    }));
-  }, []);
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -283,6 +270,7 @@ const AddAnOutletForm = ({ handleClose }) => {
     }
   };
 
+  // Fixed: Handle delivery partner selection properly
   const handleDeliveryPartnersChange = (partnerId) => {
     setFormData((prev) => {
       const partners = [...prev.deliveryPartners];
@@ -301,52 +289,6 @@ const AddAnOutletForm = ({ handleClose }) => {
     });
   };
 
-  // Initialize as an array
-  const fetchOutletPartner = async () => {
-    try {
-      const response = await fetch(
-        "https://b2c-backend-eik4.onrender.com/api/v1/admin/getoutletpartners"
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setOutletPartner(data);
-      } else {
-        toast.error("Failed to fetch outlet partners");
-      }
-    } catch (error) {
-      console.error("Error in fetching Outlet Partner:", error);
-      // toast.error("Error loading outlet partners");
-    }
-  };
-
-  const fetchDeliveryPartner = async () => {
-    try {
-      const response = await fetch(
-        "https://b2c-backend-eik4.onrender.com/api/v1/admin/deliveryInsights"
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setDeliveryPartner(data);
-      } else {
-        toast.error("Failed to fetch delivery partners");
-      }
-    } catch (error) {
-      console.error("Error in fetching Delivery Partner:", error);
-      toast.error("Error loading delivery partners");
-    }
-  };
-
-  useEffect(() => {
-    fetchOutletPartner();
-    fetchDeliveryPartner();
-  }, []);
-
-  useEffect(() => {
-    if (outletPartner) {
-      console.log("Updated Outlet Partner State:", outletPartner);
-    }
-  }, [outletPartner]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const requiredFields = [
@@ -355,73 +297,47 @@ const AddAnOutletForm = ({ handleClose }) => {
       formData.location.fullAddress.flatNo,
       formData.location.fullAddress.area,
     ];
-
+  
     if (requiredFields.some((field) => !field)) {
       toast.error("All fields are required");
       return;
     }
-
+  
     setErrorMessage("");
     setIsLoading(true);
-
+  
     try {
       const formDataToSend = new FormData();
-
+  
+      // Create the form data properly
       formDataToSend.append("id", formData.phoneNumber);
       formDataToSend.append("phNo", formData.phoneNumber);
       formDataToSend.append("name", formData.area);
       formDataToSend.append("location", JSON.stringify(formData.location));
       formDataToSend.append("outletPartnerId", formData.outletPartner);
-
+  
+      // THIS IS THE CRITICAL FIX:
+      // The backend expects "deleveryPartners" (note the typo) not "deliveryPartners"
+      // Also, you need to append each delivery partner ID separately
       formData.deliveryPartners.forEach((partnerId) => {
-        formDataToSend.append("deleveryPartners[]", partnerId);
+        formDataToSend.append("deleveryPartners", partnerId);  // Fixed: no array brackets
       });
-
+  
       if (formData.image) {
         formDataToSend.append("img", formData.image);
       }
-
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0] + ": " + pair[1]);
-      }
-
-      const response = await fetch(
-        "https://b2c-49u4.onrender.com/api/v1/admin/addOutlet",
-        {
-          method: "POST",
-          body: formDataToSend,
-        }
-      );
-
-      if (!response.ok) {
-        // Extract error data from the response
-        let errorData = null;
-        try {
-          errorData = await response.json(); // Attempt to parse JSON
-        } catch (jsonError) {
-          // If parsing JSON fails, errorData remains null
-          console.error("Failed to parse error JSON:", jsonError);
-        }
   
-        throw new Error(
-          `Failed to add outlet: ${response.status} - ${
-            errorData?.message || response.statusText
-          }`
-        );
-      }
-
-      const data = await response.json();
-      console.log("Response data:", data);
+      // Use the RTK Query mutation
+      await addOutlet(formDataToSend).unwrap();
       toast.success("Outlet added successfully");
       handleClose();
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Failed to add outlet");
+      toast.error(`Failed to add outlet: ${error.message || "Unknown error"}`);
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -438,9 +354,9 @@ const AddAnOutletForm = ({ handleClose }) => {
             type="button"
             onClick={handleSubmit}
             className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md"
-            disabled={isLoading}
+            disabled={isSubmitting || isLoading}
           >
-            {isLoading ? "Adding..." : "+ ADD"}
+            {isSubmitting || isLoading ? "Adding..." : "+ ADD"}
           </button>
         </div>
       </div>
@@ -452,7 +368,7 @@ const AddAnOutletForm = ({ handleClose }) => {
           overflowY: "auto",
           overflowX: "hidden",
           scrollbarWidth: "thin",
-          padding: "20px", // This works on Firefox, other browsers need custom styles
+          padding: "20px",
         }}
       >
         <div className="mb-6">
@@ -493,8 +409,8 @@ const AddAnOutletForm = ({ handleClose }) => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             <option value="">Select an Outlet Partner</option>
-            {outletPartner.map((partner) => (
-              <option key={partner.id} value={partner.name}>
+            {outletPartners && outletPartners.map((partner) => (
+              <option key={partner.id} value={partner.id}>
                 {partner.name}
               </option>
             ))}
@@ -520,12 +436,13 @@ const AddAnOutletForm = ({ handleClose }) => {
             DELIVERY PARTNERS
           </label>
           <div className="space-y-2 border border-gray-300 rounded-md p-4">
-            {/* <div className="mb-2 text-sm text-gray-600">
-              Total Drivers: {deliveryPartner.totalDrivers} | 
-              Total Deliveries: {deliveryPartner.totalDeliveries}
-            </div> */}
+            {deliveryPartnerData && (
+              <div className="mb-2 text-sm text-gray-600">
+                Total Drivers: {deliveryPartnerData.totalDrivers} | 
+                Total Deliveries: {deliveryPartnerData.totalDeliveries}
+              </div>
+            )}
 
-            {/* Added search input */}
             <div className="relative mb-4">
               <input
                 type="text"
@@ -533,175 +450,169 @@ const AddAnOutletForm = ({ handleClose }) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search delivery partners..."
                 className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-              <search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-            </div>
-
-            <div style={{ maxHeight: "200px", overflowY: "auto" }}>
-              {" "}
-              {/* Scrollable outer div (driver list) */}
-              {filteredDeliveryPartners &&
-                filteredDeliveryPartners.map((driver) => (
-                  <label
-                    key={driver.id}
-                    className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded"
-                    style={{ width: "100%" }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.deliveryPartners.includes(driver.id)}
-                      onChange={() => handleDeliveryPartnersChange(driver.id)}
-                      className="rounded text-orange-500 focus:ring-orange-500"
-                    />
-                    <div
-                      className="flex flex-col"
-                      style={{ width: "calc(100% - 40px)" }}
-                    >
-                      {" "}
-                      {/* Container for driver details */}
-                      <span className="font-medium">{driver.name}</span>
-                      <div style={{ maxHeight: "50px", overflowY: "auto" }}>
-                        {" "}
-                        {/* Scrollable inner div (details) */}
-                        <span className="text-sm text-gray-500">
-                          ID: {driver.id} | Ratings: {driver.ratings} |
-                          Deliveries: {driver.totalDeliveries} | Region:{" "}
-                          {driver.region || "Not specified"}
-                        </span>
-                      </div>{" "}
-                      {/* End scrollable inner div */}
-                    </div>
-                  </label>
-                ))}
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-orange-500 font-medium mb-1">
-            LOCATION
-          </label>
-          <div className="space-y-2">
-            <input
-              type="text"
-              name="zipCode"
-              value={formData.location.fullAddress.zipCode}
-              onChange={handleAddressChange}
-              placeholder="ZIP Code"
-              className="w-32 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-
-            <input
-              type="text"
-              name="area"
-              value={formData.location.fullAddress.area}
-              onChange={handleAddressChange}
-              placeholder="Area"
-              className="w-44 ml-2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-            <input
-              type="text"
-              name="city"
-              value={formData.location.fullAddress.city}
-              onChange={handleAddressChange}
-              placeholder="City"
-              className="w-32 ml-2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-
-            <input
-              type="text"
-              name="state"
-              value={formData.location.fullAddress.state}
-              onChange={handleAddressChange}
-              placeholder="State"
-              className="w-[195px] ml-2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-
-            <input
-              type="text"
-              name="flatNo"
-              value={formData.location.fullAddress.flatNo}
-              onChange={handleAddressChange}
-              placeholder="Flat No"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-
-            {/* <input
-            type="text"
-            name="country"
-            value={formData.location.fullAddress.country}
-            onChange={handleAddressChange}
-            placeholder="Country"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-          /> */}
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={getLocationFromAddress}
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                disabled={isLoading}
-              >
-                {isLoading
-                  ? "Getting Location..."
-                  : "Get Location from Address"}
-              </button>
-            </div>
-
-            {/* Add Map Component */}
-            <div className="h-64 w-full rounded-lg overflow-hidden border border-gray-300">
-              <MapContainer
-                center={mapCenter}
-                zoom={13}
-                style={{ height: "100%", width: "100%" }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-                <Marker
-                  position={markerPosition} // Use markerPosition state
-                  draggable={true} // Make marker draggable
-                  eventHandlers={{
-                    dragend: handleMarkerDragEnd, // Handle drag end event
-                  }}
-                ></Marker>
-                <MapUpdater center={mapCenter} />
-              </MapContainer>
-            </div>
-
-            {/* {formData.location.coordinates.lat && (
-              <div className="text-sm text-gray-600">
-                Lat: {formData.location.coordinates.lat.toFixed(4)}, Long:{" "}
-                {formData.location.coordinates.long.toFixed(4)}
+                <search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
-            )} */}
+  
+              <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                {isLoadingDelivery ? (
+                  <div className="text-center py-4">Loading delivery partners...</div>
+                ) : filteredDeliveryPartners.length === 0 ? (
+                  <div className="text-center py-4">No delivery partners found</div>
+                ) : (
+                  filteredDeliveryPartners.map((driver) => (
+                    <label
+                      key={driver.id}
+                      className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded"
+                      style={{ width: "100%" }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.deliveryPartners.includes(driver.id)}
+                        onChange={() => handleDeliveryPartnersChange(driver.id)}
+                        className="rounded text-orange-500 focus:ring-orange-500"
+                      />
+                      <div
+                        className="flex flex-col"
+                        style={{ width: "calc(100% - 40px)" }}
+                      >
+                        <span className="font-medium">{driver.name}</span>
+                        <div style={{ maxHeight: "50px", overflowY: "auto" }}>
+                          <span className="text-sm text-gray-500">
+                            ID: {driver.id} | Ratings: {driver.ratings} |
+                            Deliveries: {driver.totalDeliveries} | Region:{" "}
+                            {driver.region || "Not specified"}
+                          </span>
+                        </div>
+                      </div>
+                    </label>
+                  ))
+                )}
+              </div>
+              {formData.deliveryPartners.length > 0 && (
+                <div className="mt-2 p-2 bg-gray-50 rounded">
+                  <p className="text-sm font-medium">Selected partners: {formData.deliveryPartners.length}</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-
-        <div>
-          <label className="block text-orange-500 font-medium mb-1">
-            OUTLET IMAGE
-          </label>
-          <div className="flex items-center gap-4">
-            <input
-              type="file"
-              onChange={handleImageChange}
-              accept=".png,.jpg,.jpeg,.svg"
-              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-500 hover:file:bg-orange-100"
-            />
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="h-16 w-16 object-cover rounded"
+  
+          <div>
+            <label className="block text-orange-500 font-medium mb-1">
+              LOCATION
+            </label>
+            <div className="space-y-2">
+              <input
+                type="text"
+                name="zipCode"
+                value={formData.location.fullAddress.zipCode}
+                onChange={handleAddressChange}
+                placeholder="ZIP Code"
+                className="w-32 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
-            )}
+  
+              <input
+                type="text"
+                name="area"
+                value={formData.location.fullAddress.area}
+                onChange={handleAddressChange}
+                placeholder="Area"
+                className="w-44 ml-2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <input
+                type="text"
+                name="city"
+                value={formData.location.fullAddress.city}
+                onChange={handleAddressChange}
+                placeholder="City"
+                className="w-32 ml-2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+  
+              <input
+                type="text"
+                name="state"
+                value={formData.location.fullAddress.state}
+                onChange={handleAddressChange}
+                placeholder="State"
+                className="w-[195px] ml-2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+  
+              <input
+                type="text"
+                name="flatNo"
+                value={formData.location.fullAddress.flatNo}
+                onChange={handleAddressChange}
+                placeholder="Flat No"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+  
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={getLocationFromAddress}
+                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                  disabled={isLoading}
+                >
+                  {isLoading
+                    ? "Getting Location..."
+                    : "Get Location from Address"}
+                </button>
+              </div>
+  
+              <div className="h-64 w-full rounded-lg overflow-hidden border border-gray-300">
+                <MapContainer
+                  center={mapCenter}
+                  zoom={13}
+                  style={{ height: "100%", width: "100%" }}
+                  onClick={handleMapClick}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <Marker
+                    position={markerPosition}
+                    draggable={true}
+                    eventHandlers={{
+                      dragend: handleMarkerDragEnd,
+                    }}
+                  ></Marker>
+                  <MapUpdater center={mapCenter} />
+                </MapContainer>
+              </div>
+  
+              {formData.location.coordinates.lat && (
+                <div className="text-sm text-gray-600">
+                  Location coordinates: {formData.location.coordinates.lat.toFixed(4)}, {formData.location.coordinates.long.toFixed(4)}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </form>
-    </>
-  );
-};
-
-export default AddAnOutletForm;
+  
+          <div>
+            <label className="block text-orange-500 font-medium mb-1">
+              OUTLET IMAGE
+            </label>
+            <div className="flex items-center gap-4">
+              <input
+                type="file"
+                onChange={handleImageChange}
+                accept=".png,.jpg,.jpeg,.svg"
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-500 hover:file:bg-orange-100"
+              />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-16 w-16 object-cover rounded"
+                />
+              )}
+            </div>
+          </div>
+        </form>
+      </>
+    );
+  };
+  
+  export default AddAnOutletForm;
+                
