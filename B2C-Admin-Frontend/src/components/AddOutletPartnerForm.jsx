@@ -89,7 +89,7 @@ const OutletPartnerForm = ({ handleClose }) => {
           profileImage: null,
         }); // Reset form data
         setRefresh(!refresh);
-        navigate('/dashboard')
+        navigate('/outlet')
       })
       
       .catch((err) => {

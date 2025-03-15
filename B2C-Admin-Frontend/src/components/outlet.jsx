@@ -4,29 +4,36 @@ import OutletDetails from './OutletDetails'
 import AddAnOutletPartner from './AddAnOutletPartner'
 import AddAnOutlet from './AddAnOutlet'
 import OutletPartnerDetails from './outletPartnerDetails'
+import OutletDetailsTable from './outletDetailsTable'
 
-const outlet = () => {
+const outletLayout = () => {
 
 
     return (
         <>
             {/* Outlet summary */}
             <div>
-                <OutletDetails />
+                {/* <OutletDetails /> */}
 
                 {/* All outlets */}
-                <OutletPartnerDetails />
+                {/* <OutletPartnerDetails /> */}
+
+
+                <OutletDetailsTable/>
 
                 {/* Add outlet partner */}
                 <div className='flex justify-between p-12'>
+
                 <AddAnOutletPartner />
+
                 <AddAnOutlet />
 
                 </div>
+
             </div>
 
         </>
     )
 }
 
-export default outlet
+export default outletLayout

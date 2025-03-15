@@ -6,7 +6,8 @@ import outletReducer from './OutletPartnerForm';
 import ordersReducer from './ordersSlice';
 import orderDetailsReducer from './orderDetailsSlice';
 import customerInsightsReducer from './customerInsightsSlice';
-import deliveryPartnerDetailsReducer from './deliveryPartnerDetailsSlice'; // Import the new reducer
+import deliveryPartnerDetailsReducer from './deliveryPartnerDetailsSlice';
+import { apiSlice } from './apiSlice'; // Import the new API slice
 
 const store = configureStore({
     reducer: {
@@ -16,8 +17,11 @@ const store = configureStore({
         orders: ordersReducer,
         orderDetails: orderDetailsReducer,
         customerInsights: customerInsightsReducer,
-        deliveryPartnerDetails: deliveryPartnerDetailsReducer, // Add the new reducer
+        deliveryPartnerDetails: deliveryPartnerDetailsReducer,
+        [apiSlice.reducerPath]: apiSlice.reducer, // Add the API slice reducer
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(apiSlice.middleware), // Add the API middleware
 });
 
 export default store;
