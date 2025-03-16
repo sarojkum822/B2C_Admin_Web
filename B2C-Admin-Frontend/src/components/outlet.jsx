@@ -13,13 +13,10 @@ const outletLayout = () => {
         <>
             {/* Outlet summary */}
             <div>
-                {/* <OutletDetails /> */}
-
-                {/* All outlets */}
-                {/* <OutletPartnerDetails /> */}
-
+              
 
                 <OutletDetailsTable/>
+                <OutletPartnerDetails/>
 
                 {/* Add outlet partner */}
                 <div className='flex justify-between p-12'>

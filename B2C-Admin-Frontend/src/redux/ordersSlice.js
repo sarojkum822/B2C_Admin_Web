@@ -7,44 +7,45 @@ const initialState = {
   loading: false,
   error: null,
   successMessage: '',
+  lastFetched: 0, // Track last fetch time
 };
 
-// export const fetchOrders = createAsyncThunk('orders/fetchOrders', async () => {
-//   try {
-//     const response = await axios.get(
-//       "https://b2c-49u4.onrender.com/api/v1/order/order"
-//     );
-//     return response.data.orders || [];
-//   } catch (error) {
-//     throw error;
-//   }
-// });
-export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (_, { getState }) => {
-  const state = getState();
-  if (state.orders.orders.length > 0) {
-      // Data is already in the store, return it
+// Fetch Orders with Caching
+export const fetchOrders = createAsyncThunk(
+  'orders/fetchOrders',
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState();
+    const now = Date.now();
+    
+    // Prevent unnecessary re-fetching (cache for 5 min)
+    if (state.orders.orders.length > 0 && now - state.orders.lastFetched < 300000) {
       return state.orders.orders;
-  }
+    }
 
-  try {
+    try {
       const response = await axios.get(
-          "https://b2c-49u4.onrender.com/api/v1/order/order"
+        'https://b2c-49u4.onrender.com/api/v1/order/order',
+        { headers: { 'Cache-Control': 'max-age=300' } } // Cache for 5 minutes
       );
       return response.data.orders || [];
-  } catch (error) {
-      throw error;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch orders');
+    }
   }
-});
+);
 
-export const deleteOrder = createAsyncThunk('orders/deleteOrder', async (id, { rejectWithValue }) => {
-  try {
-    const response = await axios.delete(`https://b2c-backend-eik4.onrender.com/api/v1/admin/order/delete/${id}`);
-    console.log(response);
-    return id; // Return the deleted order's ID
-  } catch (error) {
-    return rejectWithValue(error.response.data);
+// Delete Order
+export const deleteOrder = createAsyncThunk(
+  'orders/deleteOrder',
+  async (id, { rejectWithValue }) => {
+    try {
+      await axios.delete(`https://b2c-backend-eik4.onrender.com/api/v1/admin/order/delete/${id}`);
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to delete order');
+    }
   }
-});
+);
 
 const ordersSlice = createSlice({
   name: 'orders',
@@ -59,6 +60,7 @@ const ordersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch Orders
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -66,11 +68,14 @@ const ordersSlice = createSlice({
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
         state.orders = action.payload;
+        state.lastFetched = Date.now(); // Update cache timestamp
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       })
+
+      // Delete Order
       .addCase(deleteOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -81,7 +86,7 @@ const ordersSlice = createSlice({
       })
       .addCase(deleteOrder.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload ? action.payload.message : action.error.message;
+        state.error = action.payload;
       });
   },
 });

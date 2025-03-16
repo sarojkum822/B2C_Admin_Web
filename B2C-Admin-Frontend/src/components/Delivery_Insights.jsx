@@ -36,6 +36,7 @@ const DeliveryInsights = () => {
   const [deliveryList, setDeliveryList] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [phone,setPhone] = useState('');
+  const [password, setPassword] = useState('');
   const [firstName,setFirstName] = useState('');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -44,6 +45,7 @@ const DeliveryInsights = () => {
   const [totalDrivers, settotalDrivers] = useState("");
   const [partnerDetails, setpartnerDetails] = useState([]);
   const [error,setError] = useState(true);
+  const [image, setImage] = useState(null)
 
   const [loading, setLoading] = useState(false);
 
@@ -54,25 +56,43 @@ const DeliveryInsights = () => {
   };
 
   const handleAddPartner = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
+  
+    // Create FormData object
+    const formData = new FormData();
+  
+    // Append other data
+    formData.append("phone", phone);
+    formData.append("firstName", firstName);
+    formData.append("password", password);
+  
+    // Append image only if it's uploaded
+    if (image) {
+      formData.append("image", image);
+    }
+  
     try {
       const response = await axios.post(
         "https://b2c-backend-eik4.onrender.com/api/v1/admin/makedeliverypartner",
-        {phone,firstName}
+        formData
+        // {
+        //   headers: {
+        //     "Content-Type": "multipart/form-data",
+        //   },
+        // }
       );
-
+  
       // Show success message
-      toast.success("Delivery partner added successfully! ");
-      setRefreshTrigger(prev => prev + 1);
-      // Close the form
+      toast.success("Delivery partner added successfully!");
+      setRefreshTrigger((prev) => prev + 1);
       setShowAddPartnerForm(false);
-
-      console.log("Success:", response.data.password);
     } catch (error) {
-      toast.error("An error occurred while adding the delivery partner.");
+      const errorMessage = error.response?.data?.message || "An error occurred while adding the delivery partner.";
+      toast.error(errorMessage);
       console.error("Error:", error);
     }
   };
+  
 
   
  
@@ -111,6 +131,7 @@ const DeliveryInsights = () => {
     const file = event.target.files[0];
     if (file) {
       console.log("File uploaded:", file);
+      setImage(file);
       // You can implement further logic here to preview the image, send it to the server, etc.
     }
   };
@@ -420,6 +441,14 @@ const DeliveryInsights = () => {
                       onChange={(e)=>setPhone(e.target.value)}
                       type="text"
                       placeholder="Phone Number"
+                      className="border border-gray-300 rounded w-full p-1 md:p-2"
+                    />
+
+                    <input
+                      value={password}
+                      onChange={(e)=>setPassword(e.target.value)}
+                      type="text"
+                      placeholder="Password"
                       className="border border-gray-300 rounded w-full p-1 md:p-2"
                     />
 

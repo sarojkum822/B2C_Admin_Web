@@ -422,7 +422,7 @@ const OutletDetailsTable = () => {
         )}
       </div>
 
-      <OutletPartnerDetails/>
+     
 
       {/* Edit Outlet Modal */}
       {editOutlet && (
