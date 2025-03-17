@@ -29,6 +29,25 @@ const OutletDetailsTable = () => {
     totalPartners: 0,
   });
 
+  const [availableDrivers, setAvailableDrivers] = useState([]);
+
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const response = await axios.get(
+          "https://b2c-backend-eik4.onrender.com/api/v1/admin/deliveryInsights"
+        );
+        if (response.data && response.data.drivers) {
+          setAvailableDrivers(response.data.drivers);
+        }
+      } catch (error) {
+        console.error("Error fetching drivers:", error);
+      }
+    };
+
+    fetchDrivers();
+  }, []);
+
   useEffect(() => {
     fetchOutlets();
   }, []);
@@ -192,7 +211,7 @@ const OutletDetailsTable = () => {
       </div>
 
       {/* Outlets Table */}
-      <div className="shadow-lg rounded-lg bg-white p-6 m-4">
+      <div className="shadow-lg  bg-white p-4 m-4 ml-4 sm:ml-10 mt-4 ">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">All Outlets</h2>
           <button
@@ -212,6 +231,9 @@ const OutletDetailsTable = () => {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Partner Id
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Address
@@ -251,33 +273,88 @@ const OutletDetailsTable = () => {
                       <div className="flex items-center gap-2">
                         <FaPhone className="text-gray-500" />
                         <span>{outlet.contact}</span>
-                        <button 
-      onClick={() => {
-        navigator.clipboard.writeText(outlet.contact);
-        // Optional: Show a tooltip or notification
-        toast.success("Contact copied to clipboard!");
-        // Or you could use a more subtle approach like changing the button text temporarily
-      }}
-      className="p-1 rounded hover:bg-gray-100"
-      title="Copy to clipboard"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-      </svg>
-    </button>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(outlet.contact);
+                            // Optional: Show a tooltip or notification
+                            toast.success("Contact copied to clipboard!");
+                            // Or you could use a more subtle approach like changing the button text temporarily
+                          }}
+                          className="p-1 rounded hover:bg-gray-100"
+                          title="Copy to clipboard"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-gray-500"
+                          >
+                            <rect
+                              x="9"
+                              y="9"
+                              width="13"
+                              height="13"
+                              rx="2"
+                              ry="2"
+                            ></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                        </button>
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                    {outlet.outletPartnerId}
+                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(
+                                          outlet.outletPartnerId
+                                        );
+                                        // Optional: Show a tooltip or notification
+                                        toast.success(
+                                          "Partner ID copied to clipboard!"
+                                        );
+                                        // Or you could use a more subtle approach like changing the button text temporarily
+                                      }}
+                                      className="p-1 rounded hover:bg-gray-100"
+                                      title="Copy to clipboard"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="text-gray-500"
+                                      >
+                                        <rect
+                                          x="9"
+                                          y="9"
+                                          width="13"
+                                          height="13"
+                                          rx="2"
+                                          ry="2"
+                                        ></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                      </svg>
+                                    </button>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <FaMapMarkerAlt className="text-red-500" />
                         <span className="text-sm text-gray-600 truncate max-w-xs">
                           {formatAddress(outlet.address)}
-                        
                         </span>
                       </div>
-
-                      
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex space-x-3">
@@ -302,7 +379,7 @@ const OutletDetailsTable = () => {
                   {/* Expanded outlet details */}
                   {expandedOutlet === outlet.id && (
                     <tr>
-                      <td colSpan="4" className="bg-blue-50 p-0">
+                      <td colSpan="5" className="bg-blue-50 p-0">
                         <div className="p-6 space-y-6">
                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Outlet Details */}
@@ -458,12 +535,8 @@ const OutletDetailsTable = () => {
                               </div>
 
                               {/* Map Preview */}
-                              <div className="mt-4 relative border rounded-lg overflow-hidden h-48 bg-gray-100">
-                                {/* <img
-                                  src={`https://maps.googleapis.com/maps/api/staticmap?center=${outlet.lat},${outlet.long}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${outlet.lat},${outlet.long}&key=YOUR_API_KEY`}
-                                  alt="Map location"
-                                  className="w-full h-full object-cover"
-                                /> */}
+                              <div className="mt-4 relative border rounded-lg overflow-hidden h-24 bg-gray-100">
+                                
                                 <div className="absolute inset-0 flex items-center justify-center">
                                   <button
                                     className="bg-white px-4 py-2 rounded-md shadow-md text-blue-600 hover:bg-blue-50 font-medium flex items-center gap-2"
@@ -488,19 +561,75 @@ const OutletDetailsTable = () => {
                             {Array.isArray(outlet.deleveryPartners) &&
                             outlet.deleveryPartners.length > 0 ? (
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {outlet.deleveryPartners.map((partner, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
-                                  >
-                                    <div className="p-2 bg-blue-100 rounded-full">
-                                      <FaPhone className="text-blue-500" />
-                                    </div>
-                                    <span className="font-medium">
-                                      {partner}
-                                    </span>
-                                  </div>
-                                ))}
+                                {outlet.deleveryPartners.map(
+                                  (partnerId, idx) => {
+                                    // Find the partner details from the drivers array
+                                    const partnerDetails =
+                                      availableDrivers.find(
+                                        (driver) => driver.id === partnerId
+                                      );
+
+                                    return (
+                                      <div
+                                        key={idx}
+                                        className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                                      >
+                                        <div className="p-2 bg-blue-100 rounded-full">
+                                          <FaPhone className="text-blue-500" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                          <span className="font-medium">
+                                            {partnerDetails
+                                              ? partnerDetails.name
+                                              : "Unknown"}
+                                          </span>
+                                          <span className="text-xs text-gray-500">
+                                            <div className="flex justify-between item bg-center">
+                                            {partnerId}
+                                            <button
+                                              onClick={() => {
+                                                navigator.clipboard.writeText(
+                                                  partnerId
+                                                );
+                                                // Optional: Show a tooltip or notification
+                                                toast.success(
+                                                  "Contact copied to clipboard!"
+                                                );
+                                                // Or you could use a more subtle approach like changing the button text temporarily
+                                              }}
+                                              className="p-1 rounded hover:bg-gray-100"
+                                              title="Copy to clipboard"
+                                            >
+                                              <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="16"
+                                                height="16"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="text-gray-500"
+                                              >
+                                                <rect
+                                                  x="9"
+                                                  y="9"
+                                                  width="13"
+                                                  height="13"
+                                                  rx="2"
+                                                  ry="2"
+                                                ></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                              </svg>
+                                            </button>
+                                            </div>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+                                )}
                               </div>
                             ) : (
                               <p className="text-gray-500 p-4 bg-gray-50 rounded-lg border border-gray-200">
