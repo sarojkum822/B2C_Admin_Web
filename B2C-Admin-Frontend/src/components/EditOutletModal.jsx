@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { FaMapMarkerAlt, FaPhone, FaPlus, FaTimes } from "react-icons/fa";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+
 
 // Leaflet icon setup
 delete L.Icon.Default.prototype._getIconUrl;
@@ -361,65 +362,61 @@ const EditOutletModal = ({ outlet, onClose, refreshOutlets }) => {
     fetchDrivers();
   }, []);
 
+  // Add these state variables at the top of your component with other useState declarations
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const dropdownRef = useRef(null);
+
+// Add this useEffect to handle clicking outside the dropdown to close it
+useEffect(() => {
+  function handleClickOutside(event) {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsDropdownOpen(false);
+    }
+  }
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
   // Rest of the JSX remains largely the same, just updating the field names
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-800">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h2 className="text-2xl font-semibold text-gray-900">
             Edit Outlet: {formData.name}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            ×
+            <FaTimes className="w-6 h-6" />
           </button>
         </div>
-
-        <div className="flex border-b">
-          <button
-            className={`px-6 py-3 font-medium text-sm ${
-              activeTab === "basic"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-            onClick={() => setActiveTab("basic")}
-          >
-            Basic Info
-          </button>
-          <button
-            className={`px-6 py-3 font-medium text-sm ${
-              activeTab === "address"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-            onClick={() => setActiveTab("address")}
-          >
-            Location & Address
-          </button>
-          <button
-            className={`px-6 py-3 font-medium text-sm ${
-              activeTab === "partners"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-            onClick={() => setActiveTab("partners")}
-          >
-            Delivery Partners
-          </button>
-          <button
-            className={`px-6 py-3 font-medium text-sm ${
-              activeTab === "image"
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-            onClick={() => setActiveTab("image")}
-          >
-            Image
-          </button>
+  
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200 bg-gray-50">
+          {["basic", "address", "partners", "image"].map((tab) => (
+            <button
+              key={tab}
+              className={`flex-1 px-6 py-3 text-sm font-medium transition-colors ${
+                activeTab === tab
+                  ? "border-b-2 border-indigo-600 text-indigo-600"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === "basic" && "Basic Info"}
+              {tab === "address" && "Location & Address"}
+              {tab === "partners" && "Delivery Partners"}
+              {tab === "image" && "Image"}
+            </button>
+          ))}
         </div>
-
+  
+        {/* Form */}
         <form
           onSubmit={handleSubmit}
           onKeyDown={(e) => {
@@ -430,23 +427,23 @@ const EditOutletModal = ({ outlet, onClose, refreshOutlets }) => {
         >
           <div className="p-6">
             {activeTab === "basic" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-gray-700 mb-2 font-medium">
-                      Outlet Name*
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Outlet Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2 font-medium">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Partner ID
                     </label>
                     <input
@@ -454,112 +451,83 @@ const EditOutletModal = ({ outlet, onClose, refreshOutlets }) => {
                       name="outletPartnerId"
                       value={formData.outletPartnerId}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
-                    Phone Number*
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     name="phNo"
                     value={formData.phNo}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                     required
                   />
                 </div>
               </div>
             )}
-
+  
             {activeTab === "address" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-gray-700 mb-2 font-medium">
-                      Latitude*
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Latitude <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="lat"
                       value={formData.address.coordinates.lat}
                       onChange={handleCoordinateChange}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2 font-medium">
-                      Longitude*
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Longitude <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="long"
                       value={formData.address.coordinates.long}
                       onChange={handleCoordinateChange}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                       required
                     />
                   </div>
                 </div>
-
-                <div className="mb-6 mt-4">
-                  {/* <label className="block text-gray-700 mb-2 font-medium">Select Location on Map</label> */}
-                  <p className="text-blue-600 font-medium mb-2">
-                    {locationMessage}
-                  </p>
-                  <div className="h-64 w-full rounded-lg border overflow-hidden">
-                    <div className="flex justify-between items-center mt-2">
-                      <p className="text-xs text-gray-500">
-                        Drag the marker to set the exact location coordinates
-                      </p>
-                      <button
-                        type="button"
-                        onClick={getCurrentLocation}
-                        className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        Use My Location
-                      </button>
-                    </div>
+  
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="text-sm text-indigo-600 font-medium">
+                      {locationMessage}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={getCurrentLocation}
+                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                      <FaMapMarkerAlt className="w-4 h-4" />
+                      Use My Location
+                    </button>
+                  </div>
+                  <div className="h-72 rounded-lg overflow-hidden border border-gray-200">
                     <MapContainer
-                      center={[
-                        formData.address.coordinates.lat,
-                        formData.address.coordinates.long,
-                      ]}
+                      center={[formData.address.coordinates.lat, formData.address.coordinates.long]}
                       zoom={13}
                       style={{ height: "100%", width: "100%" }}
                     >
                       <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                       />
                       <Marker
-                        position={[
-                          formData.address.coordinates.lat,
-                          formData.address.coordinates.long,
-                        ]}
+                        position={[formData.address.coordinates.lat, formData.address.coordinates.long]}
                         draggable={true}
                         eventHandlers={{
                           dragend: (e) => {
@@ -569,225 +537,219 @@ const EditOutletModal = ({ outlet, onClose, refreshOutlets }) => {
                               ...prev,
                               address: {
                                 ...prev.address,
-                                coordinates: {
-                                  lat: position.lat,
-                                  long: position.lng, // Changed from lng to long
-                                },
+                                coordinates: { lat: position.lat, long: position.lng },
                               },
                             }));
-                            setLocationMessage(
-                              "Location updated! Please verify the exact position."
-                            );
+                            setLocationMessage("Location updated! Please verify the exact position.");
                           },
                         }}
                       />
-                      <MapUpdater
-                        center={[
-                          formData.address.coordinates.lat,
-                          formData.address.coordinates.long,
-                        ]}
-                      />
+                      <MapUpdater center={[formData.address.coordinates.lat, formData.address.coordinates.long]} />
                     </MapContainer>
-                    <div className="flex justify-end mt-2">
-                      <button
-                        type="button"
-                        onClick={getCurrentLocation}
-                        className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        Use My Location
-                      </button>
-                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-2">
                     Drag the marker to set the exact location coordinates
                   </p>
                 </div>
-
-                <div className="p-4 rounded-lg border bg-blue-50 mb-4">
-                  <h3 className="font-medium text-blue-800 mb-3 flex items-center gap-2">
-                    <FaMapMarkerAlt /> Full Address
+  
+                <div className="bg-indigo-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium text-indigo-800 mb-4 flex items-center gap-2">
+                    <FaMapMarkerAlt /> Address Details
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-gray-700 mb-2">
-                        Flat No.
-                      </label>
-                      <input
-                        type="text"
-                        name="flatNo"
-                        value={formData.address.fullAddress.flatNo}
-                        onChange={handleAddressChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-700 mb-2">Area</label>
-                      <input
-                        type="text"
-                        name="area"
-                        value={formData.address.fullAddress.area}
-                        onChange={handleAddressChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <label className="block text-gray-700 mb-2">City</label>
-                      <input
-                        type="text"
-                        name="city"
-                        value={formData.address.fullAddress.city}
-                        onChange={handleAddressChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-700 mb-2">State</label>
-                      <input
-                        type="text"
-                        name="state"
-                        value={formData.address.fullAddress.state}
-                        onChange={handleAddressChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <label className="block text-gray-700 mb-2">
-                        ZIP Code
-                      </label>
-                      <input
-                        type="text"
-                        name="zipCode"
-                        value={formData.address.fullAddress.zipCode}
-                        onChange={handleAddressChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-700 mb-2">
-                        Country
-                      </label>
-                      <input
-                        type="text"
-                        name="country"
-                        value={formData.address.fullAddress.country}
-                        onChange={handleAddressChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                      { label: "Flat No.", name: "flatNo" },
+                      { label: "Area", name: "area" },
+                      { label: "City", name: "city" },
+                      { label: "State", name: "state" },
+                      { label: "ZIP Code", name: "zipCode" },
+                      { label: "Country", name: "country" },
+                    ].map((field) => (
+                      <div key={field.name}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {field.label}
+                        </label>
+                        <input
+                          type="text"
+                          name={field.name}
+                          value={formData.address.fullAddress[field.name]}
+                          onChange={handleAddressChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             )}
-
-            {activeTab === "partners" && (
+  
+  {activeTab === "partners" && (
+            <div className="space-y-6">
+              <div className="flex gap-3">
+              <div className="relative flex-1" ref={dropdownRef}>
+  <div
+    className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white transition-all text-sm cursor-pointer"
+    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+  >
+    <span className="text-gray-700">
+      {newPartner ? availableDrivers.find(driver => driver.id === newPartner)?.name || "Select Delivery Partner" : "Select Delivery Partner"}
+    </span>
+    <svg className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </div>
+  
+  {isDropdownOpen && (
+    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+      <div className="p-2 sticky top-0 bg-white border-b border-gray-200">
+        {/* <input
+          type="text"
+          placeholder="Search partners..."
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => {
+            // Implement search functionality if needed
+          }}
+        /> */}
+      </div>
+      
+      {/* Approved Partners Group */}
+      {/* <div className="p-2 bg-gray-100 text-xs font-semibold text-gray-500 sticky top-2">
+        Approved Partners
+      </div> */}
+      {availableDrivers
+        .filter(driver => !formData.deleveryPartners.includes(driver.id))
+        .filter(driver => {
+          const isApproved = driver.approved === true || 
+            (typeof driver.approved === "object" && driver.approved.generalDetails && 
+            driver.approved.personalDocs && driver.approved.vehicleDetails && 
+            driver.approved.bankDetails);
+          return isApproved;
+        })
+        .map(driver => (
+          <div
+            key={`approved-${driver.id}`}
+            className="px-4 py-2 hover:bg-indigo-50 cursor-pointer flex items-center justify-between"
+            onClick={() => {
+              setNewPartner(driver.id);
+              setIsDropdownOpen(false);
+            }}
+          >
+            <div>
+              <div className="font-medium">{driver.name}</div>
+              <div className="text-xs text-gray-500">
+                ID: {driver.id} • {driver.totalDeliveries} Deliveries • {driver.ratings}★
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                <span className="w-2 h-2 mr-1 bg-green-500 rounded-full"></span>
+                Approved
+              </span>
+            </div>
+          </div>
+        ))}
+      
+      {/* Pending Partners Group */}
+      {/* <div className="p-1 bg-gray-100 text-xs font-semibold text-gray-500 sticky relative top-16">
+        Pending Partners
+      </div> */}
+      {availableDrivers
+        .filter(driver => !formData.deleveryPartners.includes(driver.id))
+        .filter(driver => {
+          const isApproved = driver.approved === true || 
+            (typeof driver.approved === "object" && driver.approved.generalDetails && 
+            driver.approved.personalDocs && driver.approved.vehicleDetails && 
+            driver.approved.bankDetails);
+          return !isApproved;
+        })
+        .map(driver => (
+          <div
+            key={`pending-${driver.id}`}
+            className="px-4 py-2 hover:bg-indigo-50 cursor-pointer flex items-center justify-between"
+            onClick={() => {
+              setNewPartner(driver.id);
+              setIsDropdownOpen(false);
+            }}
+          >
+            <div>
+              <div className="font-medium">{driver.name}</div>
+              <div className="text-xs text-gray-500">
+                ID: {driver.id} • {driver.totalDeliveries} Deliveries • {driver.ratings}★
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                <span className="w-2 h-2 mr-1 bg-yellow-500 rounded-full"></span>
+                Pending
+              </span>
+            </div>
+          </div>
+        ))}
+    </div>
+  )}
+</div>
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:bg-indigo-300"
+                  onClick={handleAddPartner}
+                  disabled={!newPartner}
+                >
+                  Add Partner
+                </button>
+              </div>
               <div>
-                {/* Replace the existing input and button in the partners tab with this */}
-                <div className="flex gap-2">
-                  <select
-                    value={newPartner}
-                    onChange={(e) => setNewPartner(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 bg-white shadow-sm appearance-none cursor-pointer"
-                  >
-                    <option value="" disabled>
-                      Select a delivery partner
-                    </option>
-                    {availableDrivers
-                      .filter(
-                        (driver) =>
-                          !formData.deleveryPartners.includes(driver.id)
-                      )
-                      .map((driver) => (
-                        <option
-                          key={driver.id}
-                          value={driver.id}
-                          className="py-2 px-3 hover:bg-blue-50"
+                <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center gap-2">
+                  <FaPhone /> Assigned Partners
+                </h3>
+                {formData.deleveryPartners.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {formData.deleveryPartners.map((partnerId, index) => {
+                      const partnerDetails = availableDrivers.find((driver) => driver.id === partnerId) || {};
+                      const isApproved =
+                        partnerDetails.approved === true ||
+                        (typeof partnerDetails.approved === "object" &&
+                          partnerDetails.approved.generalDetails &&
+                          partnerDetails.approved.personalDocs &&
+                          partnerDetails.approved.vehicleDetails &&
+                          partnerDetails.approved.bankDetails);
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                         >
-                          <span className="font-medium">
-                            {driver.name || "Unknown"}
-                          </span>
-                          <span className="text-amber-500 ml-1">
-                            ({driver.ratings || 0}★)
-                          </span>
-                          <span className="text-gray-500 ml-2">
-                            - ID: {driver.id}
-                          </span>
-                        </option>
-                      ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                    onClick={handleAddPartner}
-                    disabled={!newPartner}
-                  >
-                    Add
-                  </button>
-                </div>
-                <div className="mt-4">
-                  <h3 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-                    <FaPhone /> Current Delivery Partners
-                  </h3>
-                  {formData.deleveryPartners.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {formData.deleveryPartners.map((partnerId, index) => {
-                        const partnerDetails =
-                          availableDrivers.find(
-                            (driver) => driver.id === partnerId
-                          ) || {};
-                        return (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center p-3 border rounded-lg bg-gray-50"
-                          >
-                            <span className="font-medium">
-                              {partnerDetails.name || "Unknown"} (
-                              {partnerDetails.ratings || 0}★) - {partnerId}
+                          <div className="text-sm text-gray-700">
+                            <span className="font-medium">{partnerDetails.name || "Unknown"}</span>
+                            <br />
+                            <span>ID: {partnerId}</span>
+                            <br />
+                            <span>
+                              Deliveries: {partnerDetails.totalDeliveries || 0} | Rating:{" "}
+                              {partnerDetails.ratings || 0}★ |{" "}
+                              <span className={isApproved ? "text-green-600" : "text-red-600"}>
+                                {isApproved ? "Approved" : "Pending"}
+                              </span>
                             </span>
-                            <button
-                              type="button"
-                              onClick={() => handleRemovePartner(partnerId)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FaTimes />
-                            </button>
                           </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 italic">
-                      No delivery partners added yet
-                    </p>
-                  )}
-                </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemovePartner(partnerId)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <FaTimes className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic text-sm">No delivery partners assigned yet</p>
+                )}
               </div>
-            )}
+            </div>
+          )}
 
-            {activeTab === "image" && (
+{activeTab === "image" && (
               <div className="space-y-4">
                 <div className="mb-4">
                   <label className="block text-gray-700 mb-2 font-medium">
