@@ -33,6 +33,7 @@ const OutletDetailsTable = () => {
     fetchOutlets();
   }, []);
 
+  // In OutletDetailsTable.jsx, modify the fetchOutlets function like this:
   const fetchOutlets = async (forceRefresh = false) => {
     setLoading(true);
     setError(null);
@@ -46,7 +47,23 @@ const OutletDetailsTable = () => {
       const response = await axios.get(
         "https://b2c-backend-eik4.onrender.com/api/v1/admin/allOutlet"
       );
-      setOutletData(response.data.outlets);
+
+      // Process the outlets to ensure deleveryPartners is always an array
+      const processedOutlets = response.data.outlets.map((outlet) => {
+        // Handle the case where deleveryPartners is a single number or any non-array value
+        let partners = outlet.deleveryPartners;
+        if (!Array.isArray(partners)) {
+          // If it's a number or string, convert it to a single-item array
+          partners = partners ? [partners.toString()] : [];
+        }
+
+        return {
+          ...outlet,
+          deleveryPartners: partners,
+        };
+      });
+
+      setOutletData(processedOutlets);
       setDashboardStats({
         revenue: response.data.revenue || 0,
         totalOrders: response.data.totalOrders || 0,
@@ -234,6 +251,21 @@ const OutletDetailsTable = () => {
                       <div className="flex items-center gap-2">
                         <FaPhone className="text-gray-500" />
                         <span>{outlet.contact}</span>
+                        <button 
+      onClick={() => {
+        navigator.clipboard.writeText(outlet.contact);
+        // Optional: Show a tooltip or notification
+        toast.success("Contact copied to clipboard!");
+        // Or you could use a more subtle approach like changing the button text temporarily
+      }}
+      className="p-1 rounded hover:bg-gray-100"
+      title="Copy to clipboard"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    </button>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -241,8 +273,11 @@ const OutletDetailsTable = () => {
                         <FaMapMarkerAlt className="text-red-500" />
                         <span className="text-sm text-gray-600 truncate max-w-xs">
                           {formatAddress(outlet.address)}
+                        
                         </span>
                       </div>
+
+                      
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex space-x-3">
@@ -284,13 +319,52 @@ const OutletDetailsTable = () => {
                                   <p className="text-sm text-gray-500">Name</p>
                                   <p className="font-medium">{outlet.name}</p>
                                 </div>
-                                <div>
+                                <div className="flex flex-col">
                                   <p className="text-sm text-gray-500">
                                     Partner ID
                                   </p>
-                                  <p className="font-medium">
-                                    {outlet.outletPartnerId}
-                                  </p>
+                                  <div className="flex items-center gap-2">
+                                    <p className="font-medium">
+                                      {outlet.outletPartnerId}
+                                    </p>
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(
+                                          outlet.outletPartnerId
+                                        );
+                                        // Optional: Show a tooltip or notification
+                                        toast.success(
+                                          "Partner ID copied to clipboard!"
+                                        );
+                                        // Or you could use a more subtle approach like changing the button text temporarily
+                                      }}
+                                      className="p-1 rounded hover:bg-gray-100"
+                                      title="Copy to clipboard"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="text-gray-500"
+                                      >
+                                        <rect
+                                          x="9"
+                                          y="9"
+                                          width="13"
+                                          height="13"
+                                          rx="2"
+                                          ry="2"
+                                        ></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                      </svg>
+                                    </button>
+                                  </div>
                                 </div>
                                 <div>
                                   <p className="text-sm text-gray-500">Phone</p>
@@ -310,16 +384,75 @@ const OutletDetailsTable = () => {
                               <h3 className="font-bold text-lg mb-4 text-gray-800 border-b pb-2">
                                 Location
                               </h3>
+                              {/* Replace the address section code around line 273-287 */}
                               <div className="mb-4">
                                 <div className="flex items-start gap-2">
                                   <FaMapMarkerAlt className="text-red-500 mt-1" />
-                                  <div>
-                                    <p className="font-medium">
-                                      {formatAddress(outlet.address)}
-                                    </p>
-                                    <p className="text-sm text-gray-500 mt-1">
-                                      Lat: {outlet.lat}, Long: {outlet.long}
-                                    </p>
+                                  <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                      <p className="font-medium">
+                                        {formatAddress(outlet.address)}
+                                      </p>
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(
+                                            formatAddress(outlet.address)
+                                          );
+                                          toast.success(
+                                            "Address copied to clipboard"
+                                          );
+                                        }}
+                                        className="text-gray-500 hover:text-blue-600 p-1"
+                                        title="Copy Address"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-4 w-4"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm text-gray-500 mt-1">
+                                      <p>
+                                        Lat: {outlet.lat}, Long: {outlet.long}
+                                      </p>
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(
+                                            `${outlet.lat}, ${outlet.long}`
+                                          );
+                                          toast.success(
+                                            "Coordinates copied to clipboard"
+                                          );
+                                        }}
+                                        className="text-gray-500 hover:text-blue-600 p-1"
+                                        title="Copy Coordinates"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-4 w-4"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -352,7 +485,8 @@ const OutletDetailsTable = () => {
                             <h3 className="font-bold text-lg mb-4 text-gray-800 border-b pb-2">
                               Delivery Partners
                             </h3>
-                            {outlet.deleveryPartners?.length > 0 ? (
+                            {Array.isArray(outlet.deleveryPartners) &&
+                            outlet.deleveryPartners.length > 0 ? (
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {outlet.deleveryPartners.map((partner, idx) => (
                                   <div
@@ -421,8 +555,6 @@ const OutletDetailsTable = () => {
           </div>
         )}
       </div>
-
-     
 
       {/* Edit Outlet Modal */}
       {editOutlet && (

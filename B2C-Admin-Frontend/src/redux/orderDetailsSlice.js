@@ -13,8 +13,8 @@ export const fetchOrderDetails = createAsyncThunk(
   async (id, { rejectWithValue, getState }) => {
       const state = getState();
       // Check if the order details are already in the store
-      if (state.orderDetails.orderDetails && state.orderDetails.orderDetails.id === id) {
-          return state.orderDetails.orderDetails; // Return cached data
+      if (state.orderDetails.order && state.orderDetails.order.id === id) {
+          return state.orderDetails.order; // Return cached data
       }
 
       try {

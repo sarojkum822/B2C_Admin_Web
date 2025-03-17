@@ -75,7 +75,7 @@ const Orders = () => {
     };
 
     const handleDelete = (id) => {
-        if (window.confirm("Are you sure you want to delete this order?")) {
+        
             dispatch(deleteOrder(id))
                 .then(() => {
                     dispatch(setSuccessMessage("Order has been successfully deleted"));
@@ -88,7 +88,7 @@ const Orders = () => {
                     console.log(err);
                     toast.error("Order cannot be deleted");
                 });
-        }
+        
     };
 
     // Pagination logic
